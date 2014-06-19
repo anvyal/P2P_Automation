@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="com/qualcomm/wifidirect/CopyOfplayVideo.java" kind="src" path="src"/>
+	<classpathentry kind="lib" path="C:/Eclipse/sdk/platforms/android-19/android.jar"/>
+	<classpathentry kind="lib" path="C:/Eclipse/sdk/platforms/android-19/uiautomator.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -1,0 +1,6 @@
+android create uitest-project -n Widevine -t android-16 -p D:\Files\Anvesh_Files\WorkSpace\Android\Widevine
+ant build
+cd bin
+adb push Widevine.jar /data/local/tmp/
+adb shell uiautomator runtest Widevine.jar -c com.qualcomm.widevine.WatcherDemo
+cd ..
