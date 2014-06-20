@@ -1,4 +1,5 @@
 package devices;
+$deviceCheck = 1;
 
 sub detect {
 
@@ -19,6 +20,14 @@ sub detect {
 			}
 		}
 
+	}
+	if ( $deviceCheck == 1 )
+	{
+		print "\n@devices";
+		if ( $#device_id < 1 ) {
+			print "FATAL ERROR::Unable to detect 2 devices Connected to the PC, please check device physical connection/state..!!\n\n";
+			exit(0);
+		}
 	}
 	sleep 1;
 }
@@ -52,12 +61,11 @@ sub setup {
 	system("adb -s $id install -rf IsScreenUp.apk");
 
 	clearConfig($id);
-	sleep 2;	
-	
+	sleep 2;
+
 	print "\n\tDisable and Enable WiFi to ensure proper WiFi State on device..\n";
 	system("adb -s $id shell svc wifi disable");
 
-	
 	sleep 2;
 	system("adb -s $id shell svc wifi enable");
 

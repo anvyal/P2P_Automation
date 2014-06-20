@@ -5,11 +5,11 @@ devices::display();
 $device1 = $devices::device_id[0];
 $device2 = $devices::device_id[1];
 
-devices::setup($device1);
+#devices::setup($device1);
 
 #devices::setup($device2);
 
-devices::openWifiDirect($device1);
+#devices::openWifiDirect($device1);
 
 #devices::openWifiDirect($device2);
 
