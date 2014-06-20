@@ -1,3 +1,4 @@
+=comment
 adb -s f071a0d9 shell busybox ifconfig
 
 lo        Link encap:Local Loopback
@@ -26,3 +27,4 @@ wlan0     Link encap:Ethernet  HWaddr 00:0A:F1:35:63:33
           TX packets:184 errors:0 dropped:0 overruns:0 carrier:0
           collisions:0 txqueuelen:100
           RX bytes:374937 (366.1 KiB)  TX bytes:16891 (16.4 KiB)
+=cut

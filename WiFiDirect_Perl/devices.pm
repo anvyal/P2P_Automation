@@ -23,8 +23,8 @@ sub detect {
 	}
 	if ( $deviceCheck == 1 )
 	{
-		print "\n@devices";
 		if ( $#device_id < 1 ) {
+			print "\n@devices";
 			print "FATAL ERROR::Unable to detect 2 devices Connected to the PC, please check device physical connection/state..!!\n\n";
 			exit(0);
 		}
@@ -53,7 +53,7 @@ sub setup {
 	print("\n\tRooting and Remounting the $id device..\n\n");
 	system("adb -s $id root");
 
-	#sleep 5;
+	sleep 5;
 	system("adb -s $id remount");
 	sleep 2;
 
@@ -96,7 +96,7 @@ sub clearConfig {
 
 	foreach (@conf) {
 		if ( $_ =~ "network={" ) {
-			print "Hellow";
+			print "\nSucceeded resetting P2Pconfig File..\n";
 			last;
 		}
 		$newConf[i] = $_;
