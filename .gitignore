@@ -1,0 +1,5 @@
+WiFiDirect_Perl/Logs/*
+WiFiDirect_UIAutomator/bin/WiFiDirect_UIAutomator.jar
+WiFiDirect_UIAutomator/bin/classes.dex
+WiFiDirect_UIAutomator/bin/classes.dex.d
+WiFiDirect_UIAutomator/bin/classes/com/qualcomm/wifidirect/*
