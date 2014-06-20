@@ -19,16 +19,20 @@ public class OpenWifiDirect extends UiAutomatorTestCase {
 
 		Log.e(LOG_TAG, "Starting our test!");
 
+		// Open WiFi Settings
 		UiObject wifiOption = new UiObject(new UiSelector().className("android.widget.TextView").textContains("Fi"));
 		wifiOption.clickAndWaitForNewWindow();
 		sleep(2000);
 
+		// Open More Options
 		UiObject moreOptions = new UiObject(new UiSelector().className("android.widget.ImageButton").description("More options"));
 		moreOptions.clickAndWaitForNewWindow();
 
+		// Open Wi-Fi Direct
 		UiObject selectP2P = new UiObject(new UiSelector().className("android.widget.TextView").textContains("Fi Direct"));
 		UiObject isWiFiON = new UiObject(new UiSelector().className("android.widget.LinearLayout").index(2));
 
+		// Check for Wi-Fi State
 		if (isWiFiON.isEnabled() == true) {
 			System.out.println("WiFi is Turned ON");
 			selectP2P.clickAndWaitForNewWindow();
@@ -40,12 +44,13 @@ public class OpenWifiDirect extends UiAutomatorTestCase {
 		UiObject P2PdeviceIDparent = new UiObject(new UiSelector().className("android.widget.FrameLayout").index(1));
 		UiObject P2PdeviceID = P2PdeviceIDparent.getChild(new UiSelector().className("android.widget.TextView"));
 
-		String temp = P2PdeviceID.getText();
+		// Get P2PdeviceID
+		String id = P2PdeviceID.getText();
 
 		String serial = null;
 
 		try {
-			String progArray = "setprop P2PdeviceID " + temp;
+			String progArray = "setprop P2PdeviceID " + id;
 			java.lang.Process p = Runtime.getRuntime().exec(progArray);
 		}
 
@@ -60,10 +65,8 @@ public class OpenWifiDirect extends UiAutomatorTestCase {
 		} catch (Exception ignored) {
 		}
 
-		System.out.println();
-		System.out.println(temp);
-		System.out.println(serial);
-		System.out.println();
+		// System.out.println(serial);
+		System.out.println("\n" + id + "\n");
 
 		/*
 		 * PrintWriter out = new PrintWriter("/sdcard/P2PdeviceID_" + serial+

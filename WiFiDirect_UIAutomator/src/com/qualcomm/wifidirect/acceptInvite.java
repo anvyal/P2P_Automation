@@ -13,7 +13,7 @@ import com.android.uiautomator.testrunner.UiAutomatorTestCase;
 
 public class acceptInvite extends UiAutomatorTestCase {
 
-	private static final String LOG_TAG = "AnveshDemoLog";
+	private static final String LOG_TAG = "WiFiDirectAutomation";
 	private static final String MYOKCANCELDIALOGWATCHER_STRING = "InvitationWatcher";
 
 	public void testDemo() throws UiObjectNotFoundException {

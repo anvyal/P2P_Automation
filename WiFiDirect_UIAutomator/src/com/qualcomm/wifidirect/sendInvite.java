@@ -12,10 +12,9 @@ import com.android.uiautomator.testrunner.UiAutomatorTestCase;
 
 public class sendInvite extends UiAutomatorTestCase {
 
-	String LOG = "WiFiDirectAutomation";
-	public void testDemo() throws UiObjectNotFoundException,
-			FileNotFoundException {
-		// launchAppCalled("Android_7212");
+	private static final String LOG_TAG = "WiFiDirectAutomation";
+
+	public void testDemo() throws UiObjectNotFoundException, FileNotFoundException {
 
 		String peerID = getProperty("PeerID");
 		int success = 0;
@@ -23,32 +22,27 @@ public class sendInvite extends UiAutomatorTestCase {
 			System.out.println("Trying to Send Invitation for " + i + " time");
 			success = connect(peerID);
 		}
-		if(success==0)
-		{
-			Log.e(LOG,"Couldn't find peerID in list to send the invite");
+		if (success == 0) {
+			Log.e(LOG_TAG, "Couldn't find peerID in list to send the invite");
 		}
 
 	}
 
 	public int connect(String peerID) {
 		int success = 0;
-		UiScrollable peerDevices = new UiScrollable(new UiSelector().className(
-				"android.widget.ListView").scrollable(true));
+		UiScrollable peerDevices = new UiScrollable(new UiSelector().className("android.widget.ListView").scrollable(true));
 		UiObject P2PdeviceID;
 		for (int j = 0; j < 2; j++) {
 			try {
-				P2PdeviceID = peerDevices.getChild(new UiSelector().className(
-						"android.widget.TextView").textContains(peerID));
+				P2PdeviceID = peerDevices.getChild(new UiSelector().className("android.widget.TextView").textContains(peerID));
 				if (P2PdeviceID != null) {
-					// Create a UiSelector to find the Settings app and simulate
-					// a user click to launch the app.
-					P2PdeviceID.clickAndWaitForNewWindow();
+					Log.e(LOG_TAG, "Sending Invite to device with PeerID: "+peerID);
+					P2PdeviceID.click();
 					success = 1;
 					break;
 				}
 			} catch (UiObjectNotFoundException e) {
-				System.out.println("Did not find peer device in list "
-						+ e.getLocalizedMessage());
+				System.out.println("Did not find device with PeerID: "+peerID + e.getLocalizedMessage());
 			}
 
 			try {
@@ -56,9 +50,9 @@ public class sendInvite extends UiAutomatorTestCase {
 				peerDevices.scrollForward();
 			} catch (UiObjectNotFoundException e) {
 				// TODO Auto-generated catch block
-				//e.printStackTrace();
+				// e.printStackTrace();
 			}
-			
+
 		}
 
 		return success;
@@ -67,9 +61,7 @@ public class sendInvite extends UiAutomatorTestCase {
 	public String getProperty(String propName) {
 		String propValue = null;
 		try {
-			propValue = (String) Class.forName("android.os.SystemProperties")
-					.getMethod("get", new Class[] { String.class })
-					.invoke(null, propName);
+			propValue = (String) Class.forName("android.os.SystemProperties").getMethod("get", new Class[] { String.class }).invoke(null, propName);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

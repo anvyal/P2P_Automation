@@ -50,7 +50,7 @@ sub setup {
 	my $id = $_[0];
 	print("\nSetting Device: $id for test..\n");
 
-	print("\n\tRooting and Remounting the $id device..\n");
+	print("\n\tRooting and Remounting the $id device..\n\n");
 	system("adb -s $id root");
 
 	#sleep 5;
@@ -58,22 +58,28 @@ sub setup {
 	sleep 2;
 
 	#install IsScreenUp apk
+	print("\n\nSetting screen timeout to 30 mins..\n");
 	system("adb -s $id install -rf IsScreenUp.apk");
 
 	clearConfig($id);
 	sleep 2;
-
-	print "\n\tDisable and Enable WiFi to ensure proper WiFi State on device..\n";
-	system("adb -s $id shell svc wifi disable");
-
-	sleep 2;
-	system("adb -s $id shell svc wifi enable");
+	
+	reEnableWiFi($id);
 
 	#Open IsScreenUp apk
 	system("adb -s $id shell am start -n com.qualcomm.isscreenup/.MainActivity");
 
 	sleep 5;
 
+}
+
+sub reEnableWiFi{
+	my $id = $_[0];
+	print "\n\tDisable and Enable WiFi to ensure proper WiFi State on device..\n";
+	system("adb -s $id shell svc wifi disable");
+
+	sleep 2;
+	system("adb -s $id shell svc wifi enable");
 }
 
 sub clearConfig {
@@ -111,7 +117,10 @@ sub openWifiDirect {
 
 	#Initiate a Home Keyevent
 	system("adb -s $id shell input keyevent 3");
+	#Open Device Settings
 	system("adb -s $id shell am start -n com.android.settings/.Settings");
+	
+	#Run OpenWifiDirect UIAS
 	system("adb -s $id push UIAutomator_4.4.2.jar /data/local/tmp/");
 	system("adb -s $id shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.wifidirect.OpenWifiDirect");
 }
@@ -125,14 +134,20 @@ sub acceptInvite {
 
 sub searchDevices {
 	my $id = $_[0];
+	print "\n\tSearching for Peer devices on $id..\n";
 	system("adb -s $id shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.wifidirect.searchDevices");
 }
 
 sub sendInvite {
 	my $id     = $_[0];
 	my $peerID = $_[1];
+	print "\n\tSending Peer Invitation to device: $id..\n";
 	system("adb -s $id shell setprop PeerID $peerID");
 	system("adb -s $id shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.wifidirect.sendInvite");
+}
+
+sub isConnected {
+	#Yet to write
 }
 1;
 
