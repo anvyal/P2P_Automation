@@ -20,17 +20,41 @@ public class acceptInvite extends UiAutomatorTestCase {
 
 		Log.e(LOG_TAG, "Waiting for Invitation!");
 
+		boolean success = false;
+
+		// set P2Pinvitation to NA
+		try {
+			String progArray = "setprop P2Pinvitation NA";
+			java.lang.Process p = Runtime.getRuntime().exec(progArray);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		for (int i = 1; i <= 5 && !success; i++) {
+			System.out.println("Trying to Accept Invite for " + i + " time");
+
+			accept();
+
+			if (getProperty("P2Pinvitation").equals("Accepted")) {
+				success = true;
+			}			
+		}
+		if (success) {
+			Log.e(LOG_TAG, "Didn't get any invitation from peer");
+		}
+
+	}
+
+	public void accept() {
+
 		// Define watcher
 		UiWatcher InvitationWatcher = new UiWatcher() {
 			@Override
 			public boolean checkForCondition() {
-				UiObject okCancelDialog = new UiObject(
-						new UiSelector()
-								.textContains("Invitation to connect"));
+				UiObject okCancelDialog = new UiObject(new UiSelector().textContains("Invitation to connect"));
 				if (okCancelDialog.exists()) {
 					Log.w(LOG_TAG, "Recieved Invitation !");
-					UiObject okButton = new UiObject(new UiSelector()
-							.className("android.widget.Button").text("Accept"));
+					UiObject okButton = new UiObject(new UiSelector().className("android.widget.Button").text("Accept"));
 					try {
 						okButton.click();
 						try {
@@ -53,14 +77,22 @@ public class acceptInvite extends UiAutomatorTestCase {
 		};
 
 		// Register watcher
-		UiDevice.getInstance().registerWatcher(MYOKCANCELDIALOGWATCHER_STRING,
-				InvitationWatcher);
+		UiDevice.getInstance().registerWatcher(MYOKCANCELDIALOGWATCHER_STRING, InvitationWatcher);
 
 		// Run watcher
-		   sleep (15000);
-			UiDevice.getInstance().runWatchers();
-		//getUiDevice().pressBack();
-
+		sleep(3000);
+		UiDevice.getInstance().runWatchers();
+		// getUiDevice().pressBack();
 	}
 
+	public String getProperty(String propName) {
+		String propValue = null;
+		try {
+			propValue = (String) Class.forName("android.os.SystemProperties").getMethod("get", new Class[] { String.class }).invoke(null, propName);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return propValue;
+	}
 }
