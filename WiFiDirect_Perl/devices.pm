@@ -63,7 +63,7 @@ sub setup {
 
 	clearConfig($id);
 	sleep 2;
-	
+
 	reEnableWiFi($id);
 
 	#Open IsScreenUp apk
@@ -73,7 +73,47 @@ sub setup {
 
 }
 
-sub reEnableWiFi{
+sub startServer {
+	my $id = $_[0];
+
+	#install IsScreenUp apk
+	print("\n\nInstalling KWS Server on device: $id..\n");
+	system("adb -s $id install -rf kws_server.apk");
+	sleep 2;
+	print("\n\tStarting KWS Server on device: $id..");
+	system("adb -s $id shell am start -n org.xeustechnologies.android.kws/.ui.KwsActivity");
+	sleep 2;
+	system("pwd");
+	system("adb -s $id shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.httpserver.startServer | tee ./Logs/ServerLog_$id.log");
+
+	#system("adb -s $id pull /sdcard/ServerLog_$id.log /Logs/");
+	$IP = parseIP($id);
+	print "$IP";
+	return $IP;
+}
+
+sub parseIP {
+	my $id = $_[0];
+	open SLOG, "./Logs/ServerLog_$id.log" or die $!;
+	@log = <SLOG>;
+	close SLOG;
+
+	foreach (@log)
+	{
+		if ( $_ =~ /Host {([\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3})}/ )
+		{
+			return $1;
+			$foundIP = 1;
+		}
+	}
+	if ( $foundIP == 0 )
+	{
+		print "Unable to get a valid IP, check if WiFi Direct connection is proper !!";
+		return 0;
+	}
+}
+
+sub reEnableWiFi {
 	my $id = $_[0];
 	print "\n\tDisable and Enable WiFi to ensure proper WiFi State on device..\n";
 	system("adb -s $id shell svc wifi disable");
@@ -117,9 +157,12 @@ sub openWifiDirect {
 
 	#Initiate a Home Keyevent
 	system("adb -s $id shell input keyevent 3");
+
+	print("\n\tOpening WiFi Direct on device: $id..\n");
+
 	#Open Device Settings
 	system("adb -s $id shell am start -n com.android.settings/.Settings");
-	
+
 	#Run OpenWifiDirect UIAS
 	system("adb -s $id push UIAutomator_4.4.2.jar /data/local/tmp/");
 	system("adb -s $id shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.wifidirect.OpenWifiDirect");
@@ -147,7 +190,20 @@ sub sendInvite {
 }
 
 sub isConnected {
+
 	#Yet to write
 }
+
+sub videoStability {
+	my $id = $_[0];
+	my $ip = $_[1];
+	#system("adb -s f071a0d9 push 17again.mp4 /sdcard/");
+	system("adb -s $id logcat -c");
+	system("start cmd.exe /k adb -s $id logcat -v threadtime | tee ./Logs/adb_$id.log");
+	system("start cmd.exe /k adb -s $id shell cat /proc/kmsg -v threadtime | tee ./Logs/kernel_$id.log");
+	$cmd = "perl videoStability.pl $id $ip";
+	system("start cmd.exe /k $cmd")
+}
+
 1;
 
