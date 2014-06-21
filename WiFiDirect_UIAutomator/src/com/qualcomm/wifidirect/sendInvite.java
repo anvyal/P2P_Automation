@@ -32,29 +32,47 @@ public class sendInvite extends UiAutomatorTestCase {
 		int success = 0;
 		UiScrollable peerDevices = new UiScrollable(new UiSelector().className("android.widget.ListView").scrollable(true));
 		UiObject P2PdeviceID;
-		for (int j = 0; j < 2; j++) {
+		for (int j = 0; j < 1; j++) {
 			try {
 				P2PdeviceID = peerDevices.getChild(new UiSelector().className("android.widget.TextView").textContains(peerID));
 				if (P2PdeviceID != null) {
-					Log.e(LOG_TAG, "Sending Invite to device with PeerID: "+peerID);
+					Log.e(LOG_TAG, "Sending Invite to device with PeerID: " + peerID);
 					P2PdeviceID.click();
 					success = 1;
 					break;
 				}
 			} catch (UiObjectNotFoundException e) {
-				System.out.println("Did not find device with PeerID: "+peerID + e.getLocalizedMessage());
+				System.out.println("Did not find device with PeerID: " + peerID + e.getLocalizedMessage());
+			}
+
+			// ////
+
+			System.out.println("scrolling down and searching again..");
+			try {
+				peerDevices.scrollForward();
+			} catch (UiObjectNotFoundException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
 			}
 
 			try {
-				System.out.println("scrolling down..");
-				peerDevices.scrollForward();
+				P2PdeviceID = peerDevices.getChild(new UiSelector().className("android.widget.TextView").textContains(peerID));
+				if (P2PdeviceID != null) {
+					Log.e(LOG_TAG, "Sending Invite to device with PeerID: " + peerID);
+					P2PdeviceID.click();
+					success = 1;
+					break;
+				}
 			} catch (UiObjectNotFoundException e) {
-				// TODO Auto-generated catch block
-				// e.printStackTrace();
+				System.out.println("Did not find device with PeerID: " + peerID + e.getLocalizedMessage());
+				System.out.println("Scrolling to top..");
+				try {
+					peerDevices.scrollToBeginning(3);
+				} catch (UiObjectNotFoundException e1) {
+					// Do Nothing
+				}
 			}
-
 		}
-
 		return success;
 	}
 
@@ -68,5 +86,4 @@ public class sendInvite extends UiAutomatorTestCase {
 		}
 		return propValue;
 	}
-
 }
