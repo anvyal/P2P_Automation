@@ -1,4 +1,8 @@
 package devices;
+
+use Win32;
+use Win32::Process;
+
 $deviceCheck = 1;
 
 sub detect {
@@ -7,7 +11,6 @@ sub detect {
 
 	#print "Devices: @devices";
 	print("\nDetecting the devices connected to this PC...\n");
-
 	foreach (@devices) {
 
 		#print "line $i: ".$_;
@@ -195,14 +198,22 @@ sub isConnected {
 }
 
 sub videoStability {
+
 	my $id = $_[0];
 	my $ip = $_[1];
-	#system("adb -s f071a0d9 push 17again.mp4 /sdcard/");
-	system("adb -s $id logcat -c");
-	system("start cmd.exe /k adb -s $id logcat -v threadtime | tee ./Logs/adb_$id.log");
-	system("start cmd.exe /k adb -s $id shell cat /proc/kmsg -v threadtime | tee ./Logs/kernel_$id.log");
-	$cmd = "perl videoStability.pl $id $ip";
-	system("start cmd.exe /k $cmd")
+	$| = 1;
+
+	print "Starting Logs on device: $id ... \n";
+
+	Win32::Process::Create( $p1, 'c:/perl/bin/perl.exe', 'perl adbLogs.pl 1420e50', 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
+	sleep 2;
+	Win32::Process::Create( $p2, 'c:/perl/bin/perl.exe', 'perl dmsgLogs.pl 1420e50', 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
+
+	#system("adb -s $id push 17again.mp4 /sdcard/");
+	sleep 3;
+	Win32::Process::Create( $p3, 'c:/perl/bin/perl.exe', "perl videoStability.pl $id $ip", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
+
+	#system("start cmd.exe /k $cmd")
 }
 
 1;

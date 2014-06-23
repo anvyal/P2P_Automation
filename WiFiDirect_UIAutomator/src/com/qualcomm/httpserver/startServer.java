@@ -28,6 +28,7 @@ public class startServer extends UiAutomatorTestCase {
 			try {
 				Log.e(LOG_TAG, "Starting KWS HTTP Server");
 				startServer.clickAndWaitForNewWindow();
+				sleep(2000);
 				UiObject serverLog = new UiObject(new UiSelector().className("android.widget.EditText").index(1));
 				String temp = serverLog.getText();
 				System.out.println(temp);

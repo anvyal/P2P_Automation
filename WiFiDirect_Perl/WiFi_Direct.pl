@@ -26,5 +26,5 @@ $ip1 = devices::startServer($device1);
 $ip2 = devices::startServer($device2);
 
 devices::videoStability( $device1, $ip2 );
-sleep 10;
+sleep 15;
 devices::videoStability( $device2, $ip1 );
