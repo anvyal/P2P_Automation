@@ -30,7 +30,7 @@ public class sendInvite extends UiAutomatorTestCase {
 
 	public int connect(String peerID) {
 		int success = 0;
-		UiScrollable peerDevices = new UiScrollable(new UiSelector().className("android.widget.ListView").scrollable(true));
+		UiScrollable peerDevices = new UiScrollable(new UiSelector().className("android.widget.ListView"));
 		UiObject P2PdeviceID;
 		for (int j = 0; j < 1; j++) {
 			try {
