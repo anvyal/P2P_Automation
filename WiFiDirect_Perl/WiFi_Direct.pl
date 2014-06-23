@@ -2,8 +2,14 @@ require devices;
 devices::detect();
 devices::display();
 
-$device1 = $devices::device_id[0];
-$device2 = $devices::device_id[1];
+print "\nPlease enter device1 id:";
+$device1 = <>;
+
+print "\nPlease enter device2 id:";
+$device2 = <>;
+
+#$device1 = $devices::device_id[0];
+#$device2 = $devices::device_id[1];
 
 devices::setup($device1);
 devices::setup($device2);
