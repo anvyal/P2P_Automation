@@ -1,7 +1,7 @@
 use devices;
 devices::detect();
 devices::display();
-	$| = 0;
+$| = 1;
 
 print "\nPlease enter device1 id:";
 $device1 = <>;
