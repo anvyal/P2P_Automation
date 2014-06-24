@@ -1,5 +1,5 @@
 require devices;
-
+$| = 1;
 $device1 = $ARGV[0];
 $device2 = $ARGV[1];
 
@@ -20,8 +20,10 @@ devices::sendInvite( $device2, $P2P_Device1 );
 
 devices::acceptInvite($device1);
 sleep 10;
-$ip1 = devices::startServer($device1);
-$ip2 = devices::startServer($device2);
+print "\n\nPress any key to continue..";
+$temp = <>;
+$ip1  = devices::startServer($device1);
+$ip2  = devices::startServer($device2);
 
 if ( $ip1 == 0 )
 {
@@ -33,7 +35,7 @@ if ( $ip2 == 0 )
 	print "\n\tUnable to establish successfull Wifi-Direct Connection..\n";
 	exit(0);
 }
-
+system( 1, "perl checkP2P.pl" );
 devices::videoStability( $device1, $ip2 );
 sleep 15;
 devices::videoStability( $device2, $ip1 );
