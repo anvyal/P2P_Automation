@@ -1,6 +1,5 @@
 require devices;
 
-
 $device1 = $ARGV[0];
 $device2 = $ARGV[1];
 
@@ -24,12 +23,12 @@ sleep 10;
 $ip1 = devices::startServer($device1);
 $ip2 = devices::startServer($device2);
 
-if ( ( $ip2 eq "localhost" ) )
+if ( $ip1 == 0 )
 {
 	print "\n\tUnable to establish successfull Wifi-Direct Connection..\n";
 	exit(0);
 }
-if ( $ip2 eq "localhost" )
+if ( $ip2 == 0 )
 {
 	print "\n\tUnable to establish successfull Wifi-Direct Connection..\n";
 	exit(0);

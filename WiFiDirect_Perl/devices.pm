@@ -93,7 +93,7 @@ sub startServer {
 
 	#system("adb -s $id pull /sdcard/ServerLog_$id.log /Logs/");
 	$IP = parseIP($id);
-	print "$IP";
+	print "\nIP Fetched: $IP";
 	return $IP;
 }
 
@@ -113,7 +113,7 @@ sub parseIP {
 	}
 	if ( $foundIP == 0 )
 	{
-		print "Unable to get a valid IP, check if WiFi Direct connection is proper !!";
+		print "\n\tUnable to get a valid IP, check if WiFi Direct connection is proper !!";
 		return 0;
 	}
 }
@@ -211,7 +211,7 @@ sub videoStability {
 	sleep 2;
 	Win32::Process::Create( $p2, 'c:/perl/bin/perl.exe', "perl dmsgLogs.pl $id", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
 
-	system("adb -s $id push 17again.mp4 /sdcard/");
+	system("adb -s $id push qtc88_10M.mp4 /sdcard/");
 	sleep 3;
 	Win32::Process::Create( $p3, 'c:/perl/bin/perl.exe', "perl videoStability.pl $id $ip", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
 
