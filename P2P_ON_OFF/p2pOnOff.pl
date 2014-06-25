@@ -11,7 +11,10 @@ devices::setup($device2);
 
 disconnectP2P();
 
-system("del Logs/Result.log");
+devices::startLogging($device1);
+devices::startLogging($device2);
+
+system("del Logs\\Result.log");
 
 for ( $i = 1 ; $i <= 3000 ; $i++ )
 {

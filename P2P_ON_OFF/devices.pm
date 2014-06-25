@@ -238,5 +238,19 @@ sub checkDisconnect
 	}
 }
 
+sub startLogging {
+
+	my $id = $_[0];
+	$| = 1;
+
+	print "Starting Logs on device: $id ... \n";
+
+	Win32::Process::Create( $p1, 'c:/perl/bin/perl.exe', "perl adbLogs.pl $id", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
+	sleep 2;
+	Win32::Process::Create( $p2, 'c:/perl/bin/perl.exe', "perl dmsgLogs.pl $id", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
+	sleep 2;
+	Win32::Process::Create( $p3, 'c:/perl/bin/perl.exe', "perl crashLog.pl", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
+}
+
 1;
 
