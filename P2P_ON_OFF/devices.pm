@@ -65,17 +65,10 @@ sub setup {
 	#install IsScreenUp apk
 	print("\n\nSetting screen timeout to 30 mins..\n");
 	system("adb -s $id install -rf IsScreenUp.apk");
-
-	clearConfig($id);
-	sleep 2;
-
-	reEnableWiFi($id);
-
+	
 	#Open IsScreenUp apk
 	system("adb -s $id shell am start -n com.qualcomm.isscreenup/.MainActivity");
-
-	sleep 5;
-
+	
 }
 
 sub startServer {
@@ -118,15 +111,17 @@ sub parseIP {
 	}
 }
 
-sub reEnableWiFi {
+sub EnableWiFi {
 	my $id = $_[0];
-	print "\n\tDisable and Enable WiFi to ensure proper WiFi State on device..\n";
-	system("adb -s $id shell svc wifi disable");
-
-	sleep 2;
+	print "\n\tEnabling WiFi on device..\n";
 	system("adb -s $id shell svc wifi enable");
 }
 
+sub DisableWiFi {
+	my $id = $_[0];
+	print "\n\tDisabling WiFi on device..\n";
+	system("adb -s $id shell svc wifi disable");
+}
 sub clearConfig {
 
 	my $id = $_[0];
