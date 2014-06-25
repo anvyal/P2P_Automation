@@ -65,10 +65,10 @@ sub setup {
 	#install IsScreenUp apk
 	print("\n\nSetting screen timeout to 30 mins..\n");
 	system("adb -s $id install -rf IsScreenUp.apk");
-	
+
 	#Open IsScreenUp apk
 	system("adb -s $id shell am start -n com.qualcomm.isscreenup/.MainActivity");
-	
+
 }
 
 sub startServer {
@@ -122,6 +122,7 @@ sub DisableWiFi {
 	print "\n\tDisabling WiFi on device..\n";
 	system("adb -s $id shell svc wifi disable");
 }
+
 sub clearConfig {
 
 	my $id = $_[0];
@@ -178,7 +179,6 @@ sub isConnected {
 	system("adb -s $id shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.wifidirect.isConnected");
 }
 
-
 #adb shell setprop PeerID Android_7212
 
 sub searchDevices {
@@ -212,6 +212,30 @@ sub videoStability {
 	Win32::Process::Create( $p3, 'c:/perl/bin/perl.exe', "perl videoStability.pl $id $ip", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
 
 	#system("start cmd.exe /k $cmd")
+}
+
+sub checkDisconnect
+{
+	$id  = $_[0];
+	@out = `adb -s $id shell ping -c 1 192.168.49.1`;
+
+	my $disconnect = 0;
+	foreach (@out) {
+		if ( $_ =~ /Network is unreachable/ )
+		{
+			print "\nCheckingP2P::P2P Network is Disconnected..\n";
+			$disconnect++;
+		}
+	}
+	if ( $disconnect == 0 )
+	{
+		print "\nCheckingP2P::P2P Network is Active\n";
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
 }
 
 1;

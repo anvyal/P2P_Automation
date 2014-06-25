@@ -13,4 +13,4 @@ chomp($device2);
 
 system("mkdir Logs");
 
-system("perl WiFi_Direct.pl $device1 $device2 | tee Logs/stdout.log");
+system("perl p2pOnOff.pl $device1 $device2 | tee Logs/stdout.log");
