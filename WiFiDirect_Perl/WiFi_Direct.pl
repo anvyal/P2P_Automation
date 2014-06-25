@@ -20,8 +20,10 @@ devices::sendInvite( $device2, $P2P_Device1 );
 
 devices::acceptInvite($device1);
 sleep 10;
+
 print "\n\nPress any key to continue..";
-$temp = <>;
+$temp21 = <>;
+
 $ip1  = devices::startServer($device1);
 $ip2  = devices::startServer($device2);
 

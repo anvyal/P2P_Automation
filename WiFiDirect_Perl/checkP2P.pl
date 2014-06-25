@@ -17,18 +17,18 @@ sub checkDisconnect
 	@out = `adb -s $device1 shell ping -c 1 192.168.49.1`;
 
 	#@out = `adb shell ping -c 1 127.0.0.1`;
-	print @out;
+	#print @out;
 	my $disconnect = 0;
 	foreach (@out) {
 		if ( $_ =~ /Network is unreachable/ )
 		{
-			print "\nP2P Network is Disconnected.. Re-initiating the tests\n";
+			print "\nCheckingP2P::P2P Network is Disconnected..\n";
 			$disconnect++;
 		}
 	}
 	if ( $disconnect == 0 )
 	{
-		print "\nP2P Network is Active\n";
+		print "\nCheckingP2P::P2P Network is Active\n";
 	}
 	else
 	{
@@ -69,5 +69,6 @@ sub killADB {
 	sleep(1);
 	system("taskkill /F /IM adb.exe");
 	sleep(1);
-	sleep(40);
+	sleep(60);
+	print "\n\nRe-initiating the tests..\n\n";
 }
