@@ -178,6 +178,12 @@ sub acceptInvite {
 	system("adb -s $id shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.wifidirect.acceptInvite");
 }
 
+sub isConnected {
+	my $id = $_[0];
+	system("adb -s $id shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.wifidirect.isConnected");
+}
+
+
 #adb shell setprop PeerID Android_7212
 
 sub searchDevices {
@@ -192,11 +198,6 @@ sub sendInvite {
 	print "\n\tSending Peer Invitation to device: $id..\n";
 	system("adb -s $id shell setprop PeerID $peerID");
 	system("adb -s $id shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.wifidirect.sendInvite");
-}
-
-sub isConnected {
-
-	#Yet to write
 }
 
 sub videoStability {

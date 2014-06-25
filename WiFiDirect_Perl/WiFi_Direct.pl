@@ -19,10 +19,9 @@ $P2P_Device2 = `adb -s $device2 shell getprop P2PdeviceID`;
 devices::sendInvite( $device2, $P2P_Device1 );
 
 devices::acceptInvite($device1);
-sleep 10;
 
-print "\n\nPress any key to continue..";
-$temp21 = <>;
+devices::isConnected($device1);
+
 
 $ip1  = devices::startServer($device1);
 $ip2  = devices::startServer($device2);
