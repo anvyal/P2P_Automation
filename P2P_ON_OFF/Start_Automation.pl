@@ -1,5 +1,6 @@
 use devices;
-use Win32;
+use Win32::Process;
+
 devices::detect();
 devices::display();
 $| = 1;
