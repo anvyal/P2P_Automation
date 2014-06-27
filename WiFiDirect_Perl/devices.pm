@@ -133,7 +133,7 @@ sub clearConfig {
 	system("adb -s $id pull /data/misc/wifi/p2p_supplicant.conf ./Logs/p2p_supplicant_$id.conf");
 	print("\n\Clearing REMEMBERED GROUPS from P2P config Files..\n");
 	sleep(2);
-	open FILE, "./Logs/p2p_supplicant_$id.conf" or die $!;
+	open FILE, "./Logs/p2p_supplicant_$id.conf" or warn $!;
 	open NEW,  ">./Logs/p2p_supplicant.conf"    or die $!;
 	@conf = <FILE>;
 	close(FILE);

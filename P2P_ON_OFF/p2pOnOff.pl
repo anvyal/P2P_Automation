@@ -64,6 +64,7 @@ sub connectP2P
 	devices::sendInvite( $device2, $P2P_Device1 );
 
 	devices::acceptInvite($device1);
+	devices::acceptInvite($device2);
 
 	devices::isConnected($device1);
 
