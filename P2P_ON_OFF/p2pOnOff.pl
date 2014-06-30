@@ -6,20 +6,23 @@ $device2 = $ARGV[1];
 #Configurable (in Sec)
 $delay = 15;
 
+%deviceHash1 = devices::genHash($device1);
+%deviceHash2 = devices::genHash($device2);
+
 devices::setup($device1);
 devices::setup($device2);
 
 disconnectP2P();
 
-devices::startLogging($device1);
-devices::startLogging($device2);
+devices::startLogging( $device1, \%deviceHash1 );
+devices::startLogging( $device2, \%deviceHash2 );
 
 system("del Logs\\Result.log");
 
 for ( $i = 1 ; $i <= 3000 ; $i++ )
 {
 	open RLOG, ">>./Logs/Result.log" or die $!;
-	
+
 	$result = connectP2P();
 	if ( $result == 0 )
 	{

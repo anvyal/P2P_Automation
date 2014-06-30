@@ -45,6 +45,25 @@ sub display {
 		$index++;
 	}
 }
+
+sub genHash
+{
+	my $id = $_[0];
+
+	print "\nIn genHash() $id\n";
+
+	%device = ( "adb" => "adb_$id",
+		"kernel" => "kernel_$id",
+		"video"  => "video_$id" );
+
+	while ( ( $key, $value ) = each(%device) ) {
+		print $key. ", " . $value . "\n";
+	}
+	print "\n";
+	return %device;
+
+}
+
 #################################################################
 #This Subroutine takes adb device id as parameter and
 #
@@ -240,14 +259,33 @@ sub checkDisconnect
 
 sub startLogging {
 
-	my $id = $_[0];
-	$| = 1;
+	my $id        = $_[0];
+	my $deviceRef = $_[1];
+	my %device    = %{$deviceRef};
 
+	$| = 1;
+	
 	print "Starting Logs on device: $id ... \n";
 
-	Win32::Process::Create( $p1, 'c:/perl/bin/perl.exe', "perl adbLogs.pl $id", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
+#Win32::Process::Create( $p1, 'c:/perl/bin/perl.exe', "perl adbLogs.pl $id", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
+	startProcess( "$device{'adb'}", "perl adbLogs.pl $id" );
 	sleep 2;
-	Win32::Process::Create( $p2, 'c:/perl/bin/perl.exe', "perl dmsgLogs.pl $id", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );	
+
+#Win32::Process::Create( $p2, 'c:/perl/bin/perl.exe', "perl dmsgLogs.pl $id", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
+	startProcess( "$device{'kernel'}", "perl dmsgLogs.pl $id" );
+}
+
+sub startProcess
+{
+	my $title = $_[0];
+	my $cmd   = $_[1];
+	system("start \"$title\" /MIN cmd.exe /k $cmd");
+}
+
+sub killProcess
+{
+	$title = $_[0];
+	system("taskkill /FI \"WINDOWTITLE eq $title*\"");
 }
 
 1;
