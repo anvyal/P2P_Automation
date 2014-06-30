@@ -6,6 +6,9 @@ devices::detect();
 $device1 = $devices::device_id[0];
 $device2 = $devices::device_id[1];
 
+%deviceHash1 = devices::genHash($device1);
+%deviceHash2 = devices::genHash($device2);
+
 while (1)
 {
 	checkDisconnect();
@@ -32,43 +35,19 @@ sub checkDisconnect
 	}
 	else
 	{
-		killADB();
+		killRun( \%deviceHash1 );
+		killRun( \%deviceHash2 );
 		system("perl WiFi_Direct.pl $device1 $device2 | tee Logs/stdout.log");
 	}
 }
 
-sub killADB {
-	print("\n\nKilling adb server using 'adb kill-server'... \n\n");
-	system("adb kill-server");
-	system("adb kill-server");
-	sleep(2);
-	system("adb kill-server");
-	system("adb kill-server");
-	sleep(2);
-	system("adb kill-server");
-	system("adb kill-server");
-	sleep(2);
-	system("adb kill-server");
-	system("adb kill-server");
-	sleep(2);
-	system("adb kill-server");
-	system("adb kill-server");
-	sleep(2);
-	system("adb kill-server");
-	system("adb kill-server");
-	sleep(2);
-	system("adb kill-server");
-	system("adb kill-server");
-	sleep(3);
+sub killRun {
+	my $deviceRef = $_[0];
+	my %device    = %{$deviceRef};
+	print("\n\nKilling all processes of $device1... \n\n");
+	devices::killProcess( $device{'adb'} );
+	devices::killProcess( $device{'kernel'} );
+	devices::killProcess( $device{'video'} );
 
-	system("taskkill /F /IM adb.exe");
-	sleep(1);
-	system("taskkill /F /IM adb.exe");
-	sleep(1);
-	system("taskkill /F /IM adb.exe");
-	sleep(1);
-	system("taskkill /F /IM adb.exe");
-	sleep(1);
-	sleep(60);
 	print "\n\nRe-initiating the tests..\n\n";
 }

@@ -21,6 +21,7 @@ while ( $i <= 3000 )
 #	system( "adb -s $id shell am start -d http://" . $IP . ":8080/17again.mp4 -t video/mp4 -a android.intent.action.VIEW" );
 	sleep 50;
 
+=comment
 	$out = `tasklist /FI "IMAGENAME eq adb.exe"`;
 	if ( $out =~ /No tasks are running/ )
 	{
@@ -31,7 +32,8 @@ while ( $i <= 3000 )
 		print "\nIn else Block\n";
 		sleep 1;
 	}
-	
+=cut
+
 	system("adb -s $id shell input keyevent 4");
 	system("adb -s $id shell input keyevent 4");
 

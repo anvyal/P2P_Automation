@@ -220,13 +220,14 @@ sub sendInvite {
 
 sub videoStability {
 
-	my $id = $_[0];
-	my $ip = $_[1];
+	my $id        = $_[0];
+	my $ip        = $_[1];
+	my $deviceRef = $_[2];
+	my %device    = %{$deviceRef};
 	$| = 1;
 
-	system("adb -s $id push 17Again.mp4 /sdcard/");
-	sleep 3;
-	Win32::Process::Create( $p1, 'c:/perl/bin/perl.exe', "perl videoStability.pl $id $ip", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
+#Win32::Process::Create( $p1, 'c:/perl/bin/perl.exe', "perl videoStability.pl $id $ip", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
+	startProcess( "$device{'video'}", "perl videoStability.pl $id $ip" );
 }
 
 sub startLogging {
@@ -257,7 +258,8 @@ sub startProcess
 sub killProcess
 {
 	$title = $_[0];
-	system("taskkill /FI \"WINDOWTITLE eq $title*\"");
+	print("taskkill /FI \"WINDOWTITLE eq $title\*\"");
+	system("taskkill /FI \"WINDOWTITLE eq $title\*\"");
 }
 
 1;
