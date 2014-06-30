@@ -37,7 +37,19 @@ sub checkDisconnect
 	{
 		killRun( \%deviceHash1 );
 		killRun( \%deviceHash2 );
+		sleep 5;
+		killRun( \%deviceHash1 );
+		killRun( \%deviceHash2 );
+		sleep 5;
+		killRun( \%deviceHash1 );
+		killRun( \%deviceHash2 );
+		sleep 5;
+		killRun( \%deviceHash1 );
+		killRun( \%deviceHash2 );
+		sleep 5;
 		system("perl WiFi_Direct.pl $device1 $device2 | tee Logs/stdout.log");
+		sleep 2;
+		exit(0);
 	}
 }
 

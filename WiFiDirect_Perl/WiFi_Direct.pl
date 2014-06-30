@@ -42,6 +42,7 @@ if ( $ip2 == 0 )
 	print "\n\tUnable to establish successfull Wifi-Direct Connection..\n";
 }
 system( 1, "perl checkP2P.pl" );
+system("start \"checkP2P\" /MIN cmd.exe /k perl checkP2P.pl");
 devices::startLogging( $device1, \%deviceHash1 );
 devices::startLogging( $device2, \%deviceHash2 );
 
