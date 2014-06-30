@@ -22,6 +22,7 @@ $P2P_Device2 = `adb -s $device2 shell getprop P2PdeviceID`;
 devices::sendInvite( $device2, $P2P_Device1 );
 
 devices::acceptInvite($device1);
+devices::acceptInvite($device2);
 
 devices::isConnected($device1);
 

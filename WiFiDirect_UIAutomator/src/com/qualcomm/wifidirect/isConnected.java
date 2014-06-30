@@ -28,7 +28,7 @@ public class isConnected extends UiAutomatorTestCase {
 			e.printStackTrace();
 		}
 
-		for (int i = 1; i <= 10 && !success; i++) {
+		for (int i = 1; i <= 7 && !success; i++) {
 			System.out.println("Trying to Check for Connection status for " + i + " time");
 
 			checkConnection();
