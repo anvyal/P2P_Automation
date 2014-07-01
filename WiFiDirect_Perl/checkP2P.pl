@@ -35,7 +35,7 @@ sub checkDisconnect
 
 		if ( $disconnect == 1 )
 		{
-			devices::killProcess("wifiDirect");
+			devices::killProcess("wifiDirect_$deviceHash1{'id'}");
 			killRun( \%deviceHash1 );
 			killRun( \%deviceHash2 );
 			sleep 5;
@@ -57,7 +57,7 @@ sub checkDisconnect
 
 				#CHILD
 				#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
-				system( 1, "start \"wifiDirect\" perl.exe WiFi_Direct.pl $device1 $device2 | tee Logs/stdout.log" );
+				system( 1, "start \"wifiDirect_$deviceHash1{'id'}\" perl.exe WiFi_Direct.pl $device1 $device2 | tee Logs/stdout.log" );
 			} else {
 
 				# PARENT -- Do nothing

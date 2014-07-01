@@ -3,7 +3,7 @@ $|       = 1;
 $device1 = $ARGV[0];
 $device2 = $ARGV[1];
 
-devices::killProcess("checkP2P");
+devices::killProcess("checkP2P_$device1");
 
 %deviceHash1 = devices::genHash($device1);
 %deviceHash2 = devices::genHash($device2);
@@ -28,7 +28,7 @@ devices::acceptInvite($device2);
 
 devices::isConnected($device1);
 
-my $temp=`adb -s 1a5a77e shell ls /sdcard/17Again.mp4`;
+my $temp=`adb -s $device1 shell ls /sdcard/17Again.mp4`;
 if($temp=~/No such file or directory/)
 {
 system("adb -s $device1 push 17Again.mp4 /sdcard/");
@@ -39,7 +39,7 @@ print "\nVideo File already exists in device: $device1\n";
 }
 
 
-$temp=`adb -s 1a5a77e shell ls /sdcard/17Again.mp4`;
+$temp=`adb -s $device2 shell ls /sdcard/17Again.mp4`;
 if($temp=~/No such file or directory/)
 {
 system("adb -s $device2 push 17Again.mp4 /sdcard/");
@@ -59,7 +59,7 @@ if ( not defined $pid ) {
 
 	#CHILD
 	#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
-	system( 1, "start \"checkP2P\" perl.exe checkP2P.pl $device1 $device2" );
+	system( 1, "start \"checkP2P_$device1\" perl.exe checkP2P.pl $device1 $device2" );
 	exit(0);
 } else {
 
