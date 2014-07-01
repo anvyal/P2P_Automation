@@ -3,6 +3,8 @@ $|       = 1;
 $device1 = $ARGV[0];
 $device2 = $ARGV[1];
 
+devices::killProcess("checkP2P");
+
 %deviceHash1 = devices::genHash($device1);
 %deviceHash2 = devices::genHash($device2);
 
@@ -30,6 +32,19 @@ system("adb -s $device1 push 17Again.mp4 /sdcard/");
 system("adb -s $device2 push 17Again.mp4 /sdcard/");
 sleep 3;
 
+my $pid = fork();
+			if ( not defined $pid ) {
+				die 'resources not available';
+			} elsif ( $pid == 0 ) {
+
+				#CHILD
+				#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
+				system(1, "start \"checkP2P\" perl.exe checkP2P.pl $device1 $device2");
+			} else {
+
+				# PARENT -- Do nothing
+			}	
+
 $ip1 = devices::startServer($device1);
 $ip2 = devices::startServer($device2);
 
@@ -41,8 +56,8 @@ if ( $ip2 == 0 )
 {
 	print "\n\tUnable to establish successfull Wifi-Direct Connection..\n";
 }
-system( 1, "perl checkP2P.pl" );
-system("start \"checkP2P\" /MIN cmd.exe /k perl checkP2P.pl");
+#system( 1, "perl checkP2P.pl" );
+
 devices::startLogging( $device1, \%deviceHash1 );
 devices::startLogging( $device2, \%deviceHash2 );
 

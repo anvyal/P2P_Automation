@@ -1,10 +1,8 @@
-
 use devices;
 $| = 1;
-devices::detect();
 
-$device1 = $devices::device_id[0];
-$device2 = $devices::device_id[1];
+$device1 = $ARGV[0];
+$device2 = $ARGV[1];
 
 %deviceHash1 = devices::genHash($device1);
 %deviceHash2 = devices::genHash($device2);
@@ -33,23 +31,41 @@ sub checkDisconnect
 	{
 		print "\nCheckingP2P::P2P Network is Active\n";
 	}
-	else
-	{
-		killRun( \%deviceHash1 );
-		killRun( \%deviceHash2 );
-		sleep 5;
-		killRun( \%deviceHash1 );
-		killRun( \%deviceHash2 );
-		sleep 5;
-		killRun( \%deviceHash1 );
-		killRun( \%deviceHash2 );
-		sleep 5;
-		killRun( \%deviceHash1 );
-		killRun( \%deviceHash2 );
-		sleep 5;
-		system("perl WiFi_Direct.pl $device1 $device2 | tee Logs/stdout.log");
-		sleep 2;
-		exit(0);
+	else {
+
+		if ( $disconnect == 1 )
+		{
+			devices::killProcess("wifiDirect");
+			killRun( \%deviceHash1 );
+			killRun( \%deviceHash2 );
+			sleep 5;
+			killRun( \%deviceHash1 );
+			killRun( \%deviceHash2 );
+			sleep 5;
+			killRun( \%deviceHash1 );
+			killRun( \%deviceHash2 );
+			sleep 5;
+			killRun( \%deviceHash1 );
+			killRun( \%deviceHash2 );
+			sleep 5;
+			print "\n\nRe-initiating the tests..\n\n";
+
+			my $pid = fork();
+			if ( not defined $pid ) {
+				die 'resources not available';
+			} elsif ( $pid == 0 ) {
+
+				#CHILD
+				#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
+				system( 1, "start \"wifiDirect\" perl.exe WiFi_Direct.pl $device1 $device2 | tee Logs/stdout.log" );
+			} else {
+
+				# PARENT -- Do nothing
+			}	
+
+			sleep 2;
+			exit(0);
+		}
 	}
 }
 
@@ -61,5 +77,6 @@ sub killRun {
 	devices::killProcess( $device{'kernel'} );
 	devices::killProcess( $device{'video'} );
 
-	print "\n\nRe-initiating the tests..\n\n";
+	system("adb -s $device{'id'} shell input keyevent 3");
+
 }

@@ -54,7 +54,8 @@ sub genHash
 
 	%device = ( "adb" => "adb_$id",
 		"kernel" => "kernel_$id",
-		"video"  => "video_$id" );
+		"video"  => "video_$id" ,
+		"id" => "$id");
 
 	while ( ( $key, $value ) = each(%device) ) {
 		print $key. ", " . $value . "\n";
