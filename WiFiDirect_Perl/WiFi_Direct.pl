@@ -28,8 +28,28 @@ devices::acceptInvite($device2);
 
 devices::isConnected($device1);
 
+my $temp=`adb -s 1a5a77e shell ls /sdcard/17Again.mp4`;
+if($temp=~/No such file or directory/)
+{
 system("adb -s $device1 push 17Again.mp4 /sdcard/");
+}
+else
+{
+print "\nVideo File already exists in device: $device1\n";
+}
+
+
+$temp=`adb -s 1a5a77e shell ls /sdcard/17Again.mp4`;
+if($temp=~/No such file or directory/)
+{
 system("adb -s $device2 push 17Again.mp4 /sdcard/");
+}
+else
+{
+print "\nVideo File already exists in device: $device2\n";
+}
+
+
 sleep 3;
 
 my $pid = fork();
