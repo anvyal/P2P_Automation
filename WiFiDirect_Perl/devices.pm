@@ -54,8 +54,8 @@ sub genHash
 
 	%device = ( "adb" => "adb_$id",
 		"kernel" => "kernel_$id",
-		"video"  => "video_$id" ,
-		"id" => "$id");
+		"video"  => "video_$id",
+		"id"     => "$id" );
 
 	while ( ( $key, $value ) = each(%device) ) {
 		print $key. ", " . $value . "\n";
@@ -221,20 +221,19 @@ sub sendInvite {
 
 sub videoStability {
 
-	my $id        = $_[0];
-	my $ip        = $_[1];
-	my $deviceRef = $_[2];
+	my $deviceRef = $_[0];
 	my %device    = %{$deviceRef};
+	my $ip        = $_[1];
 	$| = 1;
 
 #Win32::Process::Create( $p1, 'c:/perl/bin/perl.exe', "perl videoStability.pl $id $ip", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
-	startProcess( "$device{'video'}", "perl videoStability.pl $id $ip" );
+	startProcess( "$device{'video'}", "perl videoStability.pl $device{'id'} $ip" );
+
 }
 
 sub startLogging {
 
-	my $id        = $_[0];
-	my $deviceRef = $_[1];
+	my $deviceRef = $_[0];
 	my %device    = %{$deviceRef};
 
 	$| = 1;
@@ -242,11 +241,11 @@ sub startLogging {
 	print "Starting Logs on device: $id ... \n";
 
 #Win32::Process::Create( $p1, 'c:/perl/bin/perl.exe', "perl adbLogs.pl $id", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
-	startProcess( "$device{'adb'}", "perl adbLogs.pl $id" );
+	startProcess( "$device{'adb'}", "perl adbLogs.pl $device{'id'}" );
 	sleep 2;
 
 #Win32::Process::Create( $p2, 'c:/perl/bin/perl.exe', "perl dmsgLogs.pl $id", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
-	startProcess( "$device{'kernel'}", "perl dmsgLogs.pl $id" );
+	startProcess( "$device{'kernel'}", "perl dmsgLogs.pl $device{'id'}" );
 }
 
 sub startProcess

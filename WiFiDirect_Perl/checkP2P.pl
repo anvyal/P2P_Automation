@@ -72,7 +72,7 @@ sub checkDisconnect
 sub killRun {
 	my $deviceRef = $_[0];
 	my %device    = %{$deviceRef};
-	print("\n\nKilling all processes of $device1... \n\n");
+	print("\n\nKilling all processes of $device{'id'}... \n\n");
 	devices::killProcess( $device{'adb'} );
 	devices::killProcess( $device{'kernel'} );
 	devices::killProcess( $device{'video'} );

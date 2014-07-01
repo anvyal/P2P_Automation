@@ -33,35 +33,36 @@ system("adb -s $device2 push 17Again.mp4 /sdcard/");
 sleep 3;
 
 my $pid = fork();
-			if ( not defined $pid ) {
-				die 'resources not available';
-			} elsif ( $pid == 0 ) {
+if ( not defined $pid ) {
+	die 'resources not available';
+} elsif ( $pid == 0 ) {
 
-				#CHILD
-				#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
-				system(1, "start \"checkP2P\" perl.exe checkP2P.pl $device1 $device2");
-			} else {
+	#CHILD
+	#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
+	system( 1, "start \"checkP2P\" perl.exe checkP2P.pl $device1 $device2" );
+	exit(0);
+} else {
 
-				# PARENT -- Do nothing
-			}	
+	# PARENT -- Do nothing
+	$ip1 = devices::startServer($device1);
+	$ip2 = devices::startServer($device2);
 
-$ip1 = devices::startServer($device1);
-$ip2 = devices::startServer($device2);
+	if ( $ip1 == 0 )
+	{
+		print "\n\tUnable to establish successfull Wifi-Direct Connection..\n";
+	}
+	if ( $ip2 == 0 )
+	{
+		print "\n\tUnable to establish successfull Wifi-Direct Connection..\n";
+	}
 
-if ( $ip1 == 0 )
-{
-	print "\n\tUnable to establish successfull Wifi-Direct Connection..\n";
+	#system( 1, "perl checkP2P.pl" );
+
+	devices::startLogging( \%deviceHash1 );
+	devices::startLogging( \%deviceHash2 );
+
+	devices::videoStability( \%deviceHash1, $ip2 );
+	sleep 15;
+	devices::videoStability( \%deviceHash2, $ip1 );
 }
-if ( $ip2 == 0 )
-{
-	print "\n\tUnable to establish successfull Wifi-Direct Connection..\n";
-}
-#system( 1, "perl checkP2P.pl" );
-
-devices::startLogging( $device1, \%deviceHash1 );
-devices::startLogging( $device2, \%deviceHash2 );
-
-devices::videoStability( $device1, $ip2, \%deviceHash1 );
-sleep 15;
-devices::videoStability( $device2, $ip1, \%deviceHash2 );
 
