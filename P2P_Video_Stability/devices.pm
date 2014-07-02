@@ -151,30 +151,55 @@ sub clearConfig {
 
 	my $id = $_[0];
 	system("adb -s $id pull /data/misc/wifi/p2p_supplicant.conf ./Logs/p2p_supplicant_$id.conf");
+	system("adb -s $id pull /data/misc/wifi/wpa_supplicant.conf ./Logs/wpa_supplicant_$id.conf");
 	print("\n\Clearing REMEMBERED GROUPS from P2P config Files..\n");
 	sleep(2);
-	open FILE, "./Logs/p2p_supplicant_$id.conf" or warn $!;
-	open NEW,  ">./Logs/p2p_supplicant.conf"    or die $!;
-	@conf = <FILE>;
-	close(FILE);
-	our @newConf, $i;
+	open P2PFILE, "./Logs/p2p_supplicant_$id.conf" or warn $!;
+	open WFILE, "./Logs/wpa_supplicant_$id.conf" or warn $!;
+	open P2PNEW,  ">./Logs/p2p_supplicant.conf"    or die $!;
+	open WNEW,  ">./Logs/wpa_supplicant.conf"    or die $!;
+	@p2pConf = <P2PFILE>;
+	@wconf=<WFILE>;
+	close(P2PFILE);
+	close(WFILE);
+	our @newP2pConf, $i = 0;
+	our @newWConf;
 
-	foreach (@conf) {
+	foreach (@p2pConf) {
 		if ( $_ =~ "network={" ) {
 			print "\nSucceeded resetting P2Pconfig File..\n";
 			last;
 		}
 		$newConf[i] = $_;
-		print NEW $newConf[i];
+		print P2PNEW $newConf[i];
+		$i++;
+	}
+	
+	$i=0;
+	
+	foreach (@wconf) {
+		if ( $_ =~ "network={" ) {
+			print "\nSucceeded resetting WiFiConfig File..\n";
+			last;
+		}
+		$newWConf[i] = $_;
+		print WNEW $newWConf[i];
 		$i++;
 	}
 
-	foreach (@newConf) {
+
+	foreach (@newP2pConf) {
+		print $_;
+	}	
+	
+	foreach (@newWConf) {
 		print $_;
 	}
 
-	close(NEW);
+	close(P2PNEW);
+	close(WNEW);
 	system("adb -s $id push ./Logs/p2p_supplicant.conf /data/misc/wifi/p2p_supplicant.conf");
+	system("adb -s $id push ./Logs/wpa_supplicant.conf /data/misc/wifi/wpa_supplicant.conf");
 }
 
 sub openWifiDirect {
