@@ -25,9 +25,16 @@ public class OpenWifiDirect extends UiAutomatorTestCase {
 		sleep(2000);
 
 		// Open More Options
-		UiObject moreOptions = new UiObject(new UiSelector().className("android.widget.ImageButton").description("More options"));
-		moreOptions.clickAndWaitForNewWindow();
-
+		try {
+			UiObject moreOptions = new UiObject(new UiSelector().className("android.widget.ImageButton").description("More options"));
+			if (moreOptions != null) {
+				moreOptions.clickAndWaitForNewWindow();
+			}
+		} catch (UiObjectNotFoundException e) {
+			getUiDevice().pressMenu();
+			sleep(2000);
+		}
+		
 		// Open Wi-Fi Direct
 		UiObject selectP2P = new UiObject(new UiSelector().className("android.widget.TextView").textContains("Fi Direct"));
 		UiObject isWiFiON = new UiObject(new UiSelector().className("android.widget.LinearLayout").index(2));
@@ -41,7 +48,7 @@ public class OpenWifiDirect extends UiAutomatorTestCase {
 			Log.e(LOG_TAG, "Couldn't Access WiFi-Direct, check if there is any issue with Device WiFi");
 		}
 
-		UiObject P2PdeviceIDparent = new UiObject(new UiSelector().className("android.widget.FrameLayout").index(1));
+		UiObject P2PdeviceIDparent = new UiObject(new UiSelector().className("android.widget.ListView").resourceId("android:id/list"));
 		UiObject P2PdeviceID = P2PdeviceIDparent.getChild(new UiSelector().className("android.widget.TextView"));
 
 		// Get P2PdeviceID

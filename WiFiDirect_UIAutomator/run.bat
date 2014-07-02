@@ -1,5 +1,5 @@
-copy bin\WiFiDirect_UIAutomator.jar ..\WiFiDirect_Perl
-cd ..\WiFiDirect_Perl
+copy bin\WiFiDirect_UIAutomator.jar ..\P2P_Video_Stability
+cd ..\P2P_Video_Stability
 del UIAutomator_4.4.2.jar
 rename WiFiDirect_UIAutomator.jar UIAutomator_4.4.2.jar
 ls UI*

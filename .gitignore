@@ -1,3 +1,4 @@
 P2P_ON_OFF/Logs/*
 P2P_Video_Stability/Logs/*
 WiFiDirect_UIAutomator/bin/*
+/WiFiDirect_UIAutomator/bin/com/qualcomm/wifidirect/*.class
