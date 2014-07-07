@@ -3,6 +3,8 @@ devices::detect();
 devices::display();
 $| = 1;
 
+our @deviceList;
+
 Target:
 do
 {
@@ -38,15 +40,10 @@ if ( $Choice == 1 )
 
 		#CHILD
 		#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
-		print("start \"wifiDirect_$device1\" perl.exe WiFi_Direct.pl $device1 $device2 | tee Logs/stdout.log");
+		print("start \"wifiDirect_$device1\" perl.exe P2P_Video_Stability.pl 0 $device1 $device2 | tee Logs/stdout.log");
 
-#system( 1, "start \"wifiDirect_$device1\" perl.exe WiFi_Direct.pl $device1 $device2 | tee Logs/stdout.log" );
-	} else {
-
-		# PARENT -- Do nothing
+		system( 1, "start \"wifiDirect_$device1\" perl.exe P2P_Video_Stability.pl 0 $device1 $device2 | tee Logs/stdout.log" );
 	}
-
-	#system("perl WiFi_Direct.pl $device1 $device2 | tee Logs/stdout.log");
 }
 elsif ( $Choice == 2 )
 {
@@ -75,19 +72,14 @@ elsif ( $Choice == 2 )
 
 		#CHILD
 		#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
-		print("start \"wifiDirect_$device1\" perl.exe WiFi_Direct.pl @deviceList | tee Logs/stdout.log");
-
-#system( 1, "start \"wifiDirect_$device1\" perl.exe WiFi_Direct.pl $device1 $device2 | tee Logs/stdout.log" );
+		print("start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout.log");
+		system( "start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout.log" );
 	}
-	else {
-
-		# PARENT -- Do nothing
-	}
-
 }
-elsif ( $Choise == 0 )
+elsif ( $Choice == 0 )
 {
-	print "Hope to See you Back :) ";
+	print "\nHope to See you back soon :) ";
 	sleep 20;
 	exit(0);
 }
+
