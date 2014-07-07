@@ -73,7 +73,7 @@ elsif ( $Choice == 2 )
 		#CHILD
 		#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
 		print("start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout.log");
-		system( "start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout.log" );
+		system("start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout.log");
 	}
 }
 elsif ( $Choice == 0 )

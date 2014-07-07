@@ -61,8 +61,7 @@ sub genHash
 		print $key. ", " . $value . "\n";
 	}
 	print "\n";
-	return %device;
-
+	return \%device;
 }
 
 #################################################################
@@ -155,11 +154,11 @@ sub clearConfig {
 	print("\n\Clearing REMEMBERED GROUPS from P2P config Files..\n");
 	sleep(2);
 	open P2PFILE, "./Logs/p2p_supplicant_$id.conf" or warn $!;
-	open WFILE, "./Logs/wpa_supplicant_$id.conf" or warn $!;
+	open WFILE,   "./Logs/wpa_supplicant_$id.conf" or warn $!;
 	open P2PNEW,  ">./Logs/p2p_supplicant.conf"    or die $!;
-	open WNEW,  ">./Logs/wpa_supplicant.conf"    or die $!;
+	open WNEW,    ">./Logs/wpa_supplicant.conf"    or die $!;
 	@p2pConf = <P2PFILE>;
-	@wconf=<WFILE>;
+	@wconf   = <WFILE>;
 	close(P2PFILE);
 	close(WFILE);
 	our @newP2pConf, $i = 0;
@@ -174,9 +173,9 @@ sub clearConfig {
 		print P2PNEW $newConf[i];
 		$i++;
 	}
-	
-	$i=0;
-	
+
+	$i = 0;
+
 	foreach (@wconf) {
 		if ( $_ =~ "network={" ) {
 			print "\nSucceeded resetting WiFiConfig File..\n";
@@ -187,11 +186,10 @@ sub clearConfig {
 		$i++;
 	}
 
-
 	foreach (@newP2pConf) {
 		print $_;
-	}	
-	
+	}
+
 	foreach (@newWConf) {
 		print $_;
 	}

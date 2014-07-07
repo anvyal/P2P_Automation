@@ -1,26 +1,55 @@
+#use strict;
 require devices;
-$|        = 1;
-$one2many = $ARGV[0];
+use Data::Dumper;
+$| = 1;
+our $one2many = $ARGV[0];
 chomp($one2many);
 
-our @deviceListDemo;
+our @deviceList;
+our @deviceHash;
 
 if ( $one2many == 1 )
 {
-	for ( $j = 0 ; $j < $#ARGV ; $j++ )
+	for ( my $j = 0 ; $j < $#ARGV ; $j++ )
 	{
-		if ( !( $j == 0 || $j == $#ARGV ) ) #Ignore first and last argument
+		if ( !( $j == 0 || $j == $#ARGV ) )    #Ignore first and last argument
 		{
-			$deviceListDemo[ $j - 1 ] = $ARGV[$j];
+			$deviceList[ $j - 1 ] = $ARGV[$j];
 		}
 	}
 
 	print "\nFollowing device IDs will be under test: \n";
-	for ( $j = 0 ; $j <= $#deviceListDemo ; $j++ )
+	for ( my $j = 0 ; $j <= $#deviceList ; $j++ )
 	{
-		print "\tDevice " . ( $j + 1 ) . ":" . $deviceListDemo[$j] . "\n";
+		print "\tDevice " . ( $j + 1 ) . ":" . $deviceList[$j] . "\n";
 	}
-	sleep 10;
+
+	devices::killProcess("checkP2P_$deviceList[0]");
+
+	for ( my $j = 0 ; $j <= $#deviceList ; $j++ )
+	{
+		push( @deviceHash, { %{ devices::genHash( $deviceList[$j] ) } } );
+	}
+
+	for ( $j = 0 ; $j <= $#deviceHash ; $j++ )
+	{
+		print "\nTest:\n";
+
+		#$deviceHash[$j]->{'video'};
+
+		while ( ( $key, $value ) = each( %{ $deviceHash[$j] } ) ) {
+			print $key. ", " . $value . "\n";
+		}
+
+		print "devices::setup( $deviceHash[$j]->{'id'} )";
+
+	}
+
+	#devices::setup($device1);
+
+	#devices::openWifiDirect($device1);
+
+	sleep 30;
 	exit(0);
 }
 
@@ -111,32 +140,3 @@ elsif ( $one2many == 0 )
 	}
 
 }
-else
-{
-	print "Ready of Automation";
-
-	for ( $j = 0 ; $j < $#ARGV ; $j++ )
-	{
-		if ( $j = 0 )
-		{
-
-			#Do Nothing;
-		}
-		elsif ( !( $j == $#ARGV ) )
-		{
-			$deviceListDemo[ $j - 1 ] = $ARGV[$j];
-		}
-	}
-
-	@deviceListDemo = @ARGV;
-
-	print "\nFollowing device IDs will be under test: \n";
-	for ( $j = 0 ; $j <= $#deviceListDemo ; $j++ )
-	{
-		print "\tDevice " . ( $j + 1 ) . ":" . $deviceListDemo[$j] . "\n";
-	}
-	$one2many = 1;
-	sleep 20;
-	exit(0);
-}
-
