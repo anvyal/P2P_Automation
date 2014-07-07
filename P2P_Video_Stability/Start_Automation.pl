@@ -3,27 +3,91 @@ devices::detect();
 devices::display();
 $| = 1;
 
-print "\nPlease enter device1 id:";
-$device1 = <>;
-chomp($device1);
+Target:
+do
+{
+	print "\nPlease choose the Target to be profiled: 
 
-print "\nPlease enter device2 id:";
-$device2 = <>;
-chomp($device2);
+*********************************
+*	1. One to One Scenario 	*
+*	2. One to Many Scenario	*
+*	0. To Exit              *
+*********************************
 
-system("mkdir Logs");
+Enter option: ";
+	$Choice = <>;
+	chomp($Choice);
+} while ( !( $Choice == 1 || $Choice == 2 || $Choice == 0 ) );
 
-my $pid = fork();
-if ( not defined $pid ) {
-	die 'resources not available';
-} elsif ( $pid == 0 ) {
+if ( $Choice == 1 )
+{
+	print "\nPlease enter device1 id:";
+	$device1 = <>;
+	chomp($device1);
 
-	#CHILD
-	#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
-	system( 1, "start \"wifiDirect_$device1\" perl.exe WiFi_Direct.pl $device1 $device2 | tee Logs/stdout.log" );
-} else {
+	print "\nPlease enter device2 id:";
+	$device2 = <>;
+	chomp($device2);
 
-	# PARENT -- Do nothing
+	system("mkdir Logs");
+
+	my $pid = fork();
+	if ( not defined $pid ) {
+		die 'resources not available';
+	} elsif ( $pid == 0 ) {
+
+		#CHILD
+		#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
+		print("start \"wifiDirect_$device1\" perl.exe WiFi_Direct.pl $device1 $device2 | tee Logs/stdout.log");
+
+#system( 1, "start \"wifiDirect_$device1\" perl.exe WiFi_Direct.pl $device1 $device2 | tee Logs/stdout.log" );
+	} else {
+
+		# PARENT -- Do nothing
+	}
+
+	#system("perl WiFi_Direct.pl $device1 $device2 | tee Logs/stdout.log");
 }
-#system("perl WiFi_Direct.pl $device1 $device2 | tee Logs/stdout.log");
+elsif ( $Choice == 2 )
+{
+	my $i = 1;
+  Target:
+	do {
+		print "\nPlease enter device$i id (0 to Stop):";
+		$deviceList[ $i - 1 ] = <>;
+		chomp( $deviceList[ $i - 1 ] );
+		$i++;
+	} while ( !( $deviceList[ $i - 2 ] eq '0' ) );
 
+	print "\nFollowing device IDs will be under test: \n";
+	for ( $j = 0 ; $j < $#deviceList ; $j++ )
+	{
+		print "\tDevice " . ( $j + 1 ) . ":" . $deviceList[$j] . "\n";
+	}
+
+	system("mkdir Logs");
+
+	my $pid = fork();
+	if ( not defined $pid ) {
+		die 'resources not available';
+	}
+	elsif ( $pid == 0 ) {
+
+		#CHILD
+		#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
+		print("start \"wifiDirect_$device1\" perl.exe WiFi_Direct.pl @deviceList | tee Logs/stdout.log");
+
+#system( 1, "start \"wifiDirect_$device1\" perl.exe WiFi_Direct.pl $device1 $device2 | tee Logs/stdout.log" );
+	}
+	else {
+
+		# PARENT -- Do nothing
+	}
+
+}
+elsif ( $Choise == 0 )
+{
+	print "Hope to See you Back :) ";
+	sleep 20;
+	exit(0);
+}
