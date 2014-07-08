@@ -91,7 +91,8 @@ if ( $one2many == 1 ) {
 
 		#CHILD
 		#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
-		system( 1, "start \"checkP2P_$device1\" perl.exe checkP2P.pl $device1 $device2" );
+		print ("\nstart \"checkP2P_$deviceHash[0]->{'id'}\" perl.exe checkP2P.pl $one2many @deviceList 0\n" );
+		system( 1, "start \"checkP2P_$deviceHash[0]->{'id'}\" perl.exe checkP2P.pl $one2many @deviceList 0" );
 		exit(0);
 	}
 	else {
@@ -178,9 +179,9 @@ elsif ( $one2many == 0 ) {
 	}
 	elsif ( $pid == 0 ) {
 
-		#CHILD
-		#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
-		system( 1, "start \"checkP2P_$device1\" perl.exe checkP2P.pl $device1 $device2" );
+#CHILD
+#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
+#system( 1, "start \"checkP2P_$device1\" perl.exe checkP2P.pl $device1 $device2" );
 		exit(0);
 	}
 	else {

@@ -1,21 +1,32 @@
 use devices;
 $| = 1;
+my $one2many = $ARGV[0];
 
-$device1 = $ARGV[0];
-$device2 = $ARGV[1];
+if ( $one2many == 1 ) {
+	for ( my $j = 0 ; $j < $#ARGV ; $j++ ) {
+		if ( !( $j == 0 || $j == $#ARGV ) )    #Ignore first and last argument
+		{
+			$deviceList[ $j - 1 ] = $ARGV[$j];
+		}
+	}
+}
 
-%deviceHash1 = devices::genHash($device1);
-%deviceHash2 = devices::genHash($device2);
-
+for ( my $j = 0 ; $j <= $#deviceList ; $j++ ) {
+	push( @deviceHash, { %{ devices::genHash( $deviceList[$j] ) } } );
+}
 while (1)
 {
-	checkDisconnect();
-	sleep(15);
+	for ( my $j = 0 ; $j <= $#deviceList ; $j++ ) {
+		checkDisconnect( $deviceHash[$j]->{'id'} );
+		sleep(5);
+	}
 }
 
 sub checkDisconnect
 {
-	@out = `adb -s $device1 shell ping -c 1 192.168.49.1`;
+	$device = $_[0];
+	print "\nadb -s $device shell ping -c 1 192.168.49.1\n";
+	@out    = `adb -s $device shell ping -c 1 192.168.49.1`;
 
 	#@out = `adb shell ping -c 1 127.0.0.1`;
 	#print @out;
@@ -35,19 +46,12 @@ sub checkDisconnect
 
 		if ( $disconnect == 1 )
 		{
-			devices::killProcess("wifiDirect_$deviceHash1{'id'}");
-			killRun( \%deviceHash1 );
-			killRun( \%deviceHash2 );
-			sleep 5;
-			killRun( \%deviceHash1 );
-			killRun( \%deviceHash2 );
-			sleep 5;
-			killRun( \%deviceHash1 );
-			killRun( \%deviceHash2 );
-			sleep 5;
-			killRun( \%deviceHash1 );
-			killRun( \%deviceHash2 );
-			sleep 5;
+			devices::killProcess("P2P_Video_Stability_$deviceHash[0]->{'id'}");
+
+			for ( my $j = 0 ; $j <= $#deviceList ; $j++ ) {
+				killRun( $deviceHash[$j] );
+				sleep 5;
+			}
 			print "\n\nRe-initiating the tests..\n\n";
 
 			my $pid = fork();
@@ -57,13 +61,15 @@ sub checkDisconnect
 
 				#CHILD
 				#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
-				system( 1, "start \"wifiDirect_$deviceHash1{'id'}\" perl.exe WiFi_Direct.pl $device1 $device2 | tee Logs/stdout.log" );
+				print("\nstart \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout.log\n");
+				system(1,"start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout.log");
+				
 			} else {
 
 				# PARENT -- Do nothing
-			}	
+			}
 
-			sleep 2;
+			sleep 20;
 			exit(0);
 		}
 	}
