@@ -30,41 +30,45 @@ if ( $one2many == 1 ) {
 
 	#Setup
 	for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
+		devices::setup( $deviceHash[$j]->{'id'} );
+	}
+
+	for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
 		print "\nTest:\n";
 
 		#while ( ( $key, $value ) = each( %{ $deviceHash[$j] } ) ) {
 		#	print $key. ", " . $value . "\n";
 		#}
 
-		devices::setup( $deviceHash[$j]->{'id'} );
-
 		devices::openWifiDirect( $deviceHash[$j]->{'id'} );
 
 		#Adds an item to deviceHash
 		$deviceHash[$j]->{'p2pid'} = `adb -s $deviceHash[$j]->{'id'} shell getprop P2PdeviceID`;
-
 		#pending
 		if ( ( ( $#deviceList + 1 ) % 2 ) == 0 ) {
 			if ( ( $j % 2 ) != 0 ) {
 				devices::sendInvite( $deviceHash[$j]->{'id'}, $deviceHash[ $j - 1 ]->{'p2pid'} );
+				devices::acceptInvite( $deviceHash[ $j - 1 ]->{'id'} );
 			}
 		}
 		elsif ( ( $#deviceList + 1 ) % 2 != 0 ) {
 			if ( ( $j % 2 ) != 0 ) {
 				devices::sendInvite( $deviceHash[$j]->{'id'}, $deviceHash[ $j - 1 ]->{'p2pid'} );
+				devices::acceptInvite( $deviceHash[ $j - 1 ]->{'id'} );
 			}
 
 			if ( $j == $#deviceHash ) {
+				sleep 5;
 				devices::sendInvite( $deviceHash[$j]->{'id'}, $deviceHash[ $j - 1 ]->{'p2pid'} );
+				devices::acceptInvite( $deviceHash[ $j - 1 ]->{'id'} );
 			}
 
 		}
 	}
-
 	for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
 
 		#print "\n$deviceHash[$j]->{'id'}: $deviceHash[$j]->{'p2pid'}\n";
-		devices::acceptInvite( $deviceHash[$j]->{'id'} );
+		#devices::acceptInvite( $deviceHash[$j]->{'id'} );
 	}
 	for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
 
@@ -91,7 +95,7 @@ if ( $one2many == 1 ) {
 
 		#CHILD
 		#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
-		print ("\nstart \"checkP2P_$deviceHash[0]->{'id'}\" perl.exe checkP2P.pl $one2many @deviceList 0\n" );
+		print("\nstart \"checkP2P_$deviceHash[0]->{'id'}\" perl.exe checkP2P.pl $one2many @deviceList 0\n");
 		system( 1, "start \"checkP2P_$deviceHash[0]->{'id'}\" perl.exe checkP2P.pl $one2many @deviceList 0" );
 		exit(0);
 	}

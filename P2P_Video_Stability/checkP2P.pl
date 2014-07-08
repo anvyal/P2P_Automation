@@ -26,7 +26,7 @@ sub checkDisconnect
 {
 	$device = $_[0];
 	print "\nadb -s $device shell ping -c 1 192.168.49.1\n";
-	@out    = `adb -s $device shell ping -c 1 192.168.49.1`;
+	@out = `adb -s $device shell ping -c 1 192.168.49.1`;
 
 	#@out = `adb shell ping -c 1 127.0.0.1`;
 	#print @out;
@@ -62,8 +62,8 @@ sub checkDisconnect
 				#CHILD
 				#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
 				print("\nstart \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout.log\n");
-				system(1,"start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout.log");
-				
+				system( 1, "start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout.log" );
+
 			} else {
 
 				# PARENT -- Do nothing
