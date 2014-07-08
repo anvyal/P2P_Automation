@@ -8,10 +8,8 @@ chomp($one2many);
 our @deviceList;
 our @deviceHash;
 
-if ( $one2many == 1 )
-{
-	for ( my $j = 0 ; $j < $#ARGV ; $j++ )
-	{
+if ( $one2many == 1 ) {
+	for ( my $j = 0 ; $j < $#ARGV ; $j++ ) {
 		if ( !( $j == 0 || $j == $#ARGV ) )    #Ignore first and last argument
 		{
 			$deviceList[ $j - 1 ] = $ARGV[$j];
@@ -19,22 +17,19 @@ if ( $one2many == 1 )
 	}
 
 	print "\nFollowing device IDs will be under test: \n";
-	for ( my $j = 0 ; $j <= $#deviceList ; $j++ )
-	{
+	for ( my $j = 0 ; $j <= $#deviceList ; $j++ ) {
 		print "\tDevice " . ( $j + 1 ) . ":" . $deviceList[$j] . "\n";
 	}
 
 	devices::killProcess("checkP2P_$deviceList[0]");
 
 	#GenHash
-	for ( my $j = 0 ; $j <= $#deviceList ; $j++ )
-	{
+	for ( my $j = 0 ; $j <= $#deviceList ; $j++ ) {
 		push( @deviceHash, { %{ devices::genHash( $deviceList[$j] ) } } );
 	}
 
 	#Setup
-	for ( $j = 0 ; $j <= $#deviceHash ; $j++ )
-	{
+	for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
 		print "\nTest:\n";
 
 		#while ( ( $key, $value ) = each( %{ $deviceHash[$j] } ) ) {
@@ -49,49 +44,88 @@ if ( $one2many == 1 )
 		$deviceHash[$j]->{'p2pid'} = `adb -s $deviceHash[$j]->{'id'} shell getprop P2PdeviceID`;
 
 		#pending
-		if ( ( ( $#deviceList + 1 ) % 2 ) == 0 )
-		{
+		if ( ( ( $#deviceList + 1 ) % 2 ) == 0 ) {
 			if ( ( $j % 2 ) != 0 ) {
 				devices::sendInvite( $deviceHash[$j]->{'id'}, $deviceHash[ $j - 1 ]->{'p2pid'} );
 			}
 		}
-		elsif ( ( $#deviceList + 1 ) % 2 != 0 )
-		{
+		elsif ( ( $#deviceList + 1 ) % 2 != 0 ) {
 			if ( ( $j % 2 ) != 0 ) {
 				devices::sendInvite( $deviceHash[$j]->{'id'}, $deviceHash[ $j - 1 ]->{'p2pid'} );
 			}
 
-			if ( $j == $#deviceHash )
-			{
+			if ( $j == $#deviceHash ) {
 				devices::sendInvite( $deviceHash[$j]->{'id'}, $deviceHash[ $j - 1 ]->{'p2pid'} );
 			}
 
 		}
 	}
 
-	for ( $j = 0 ; $j <= $#deviceHash ; $j++ )
-	{
+	for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
 
 		#print "\n$deviceHash[$j]->{'id'}: $deviceHash[$j]->{'p2pid'}\n";
 		devices::acceptInvite( $deviceHash[$j]->{'id'} );
 	}
-	for ( $j = 0 ; $j <= $#deviceHash ; $j++ )
-	{
+	for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
+
+		my $temp = `adb -s $deviceHash[$j]->{'id'} shell ls /sdcard/17Again.mp4`;
+		if ( $temp =~ /No such file or directory/ ) {
+			system( 1, "adb -s $deviceHash[$j]->{'id'} push 17Again.mp4 /sdcard/" );
+		}
+		else {
+			print "\nVideo File already exists in device: $deviceHash[$j]->{'id'}\n";
+		}
 
 		#print "\n$deviceHash[$j]->{'id'}: $deviceHash[$j]->{'p2pid'}\n";
 		devices::isConnected( $deviceHash[$j]->{'id'} );
+
 	}
 
-	#devices::setup($device1);
+	sleep 3;
 
-	#devices::openWifiDirect($device1);
+	my $pid = fork();
+	if ( not defined $pid ) {
+		die 'resources not available';
+	}
+	elsif ( $pid == 0 ) {
+
+		#CHILD
+		#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
+		system( 1, "start \"checkP2P_$device1\" perl.exe checkP2P.pl $device1 $device2" );
+		exit(0);
+	}
+	else {
+
+		# PARENT
+		for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
+
+			#print "\n$deviceHash[$j]->{'id'}: $deviceHash[$j]->{'p2pid'}\n";
+			$deviceHash[$j]->{'ip'} = devices::startServer( $deviceHash[$j]->{'id'} );
+
+		}
+
+		for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
+
+			#print "\n$deviceHash[$j]->{'id'}: $deviceHash[$j]->{'p2pid'}\n";
+			devices::startLogging( $deviceHash[$j] );
+
+		}
+		$ip2 = "192.168.49.1";
+		for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
+
+			#print "\n$deviceHash[$j]->{'id'}: $deviceHash[$j]->{'p2pid'}\n";
+			devices::videoStability( $deviceHash[$j], $ip2 );
+			sleep 15;
+
+		}
+
+	}
 
 	sleep 3000;
 	exit(0);
 }
 
-elsif ( $one2many == 0 )
-{
+elsif ( $one2many == 0 ) {
 	$device1 = $ARGV[1];
 	$device2 = $ARGV[2];
 
@@ -121,22 +155,18 @@ elsif ( $one2many == 0 )
 	devices::isConnected($device1);
 
 	my $temp = `adb -s $device1 shell ls /sdcard/17Again.mp4`;
-	if ( $temp =~ /No such file or directory/ )
-	{
+	if ( $temp =~ /No such file or directory/ ) {
 		system("adb -s $device1 push 17Again.mp4 /sdcard/");
 	}
-	else
-	{
+	else {
 		print "\nVideo File already exists in device: $device1\n";
 	}
 
 	$temp = `adb -s $device2 shell ls /sdcard/17Again.mp4`;
-	if ( $temp =~ /No such file or directory/ )
-	{
+	if ( $temp =~ /No such file or directory/ ) {
 		system("adb -s $device2 push 17Again.mp4 /sdcard/");
 	}
-	else
-	{
+	else {
 		print "\nVideo File already exists in device: $device2\n";
 	}
 
@@ -145,24 +175,24 @@ elsif ( $one2many == 0 )
 	my $pid = fork();
 	if ( not defined $pid ) {
 		die 'resources not available';
-	} elsif ( $pid == 0 ) {
+	}
+	elsif ( $pid == 0 ) {
 
 		#CHILD
 		#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
 		system( 1, "start \"checkP2P_$device1\" perl.exe checkP2P.pl $device1 $device2" );
 		exit(0);
-	} else {
+	}
+	else {
 
 		# PARENT -- Do nothing
 		$ip1 = devices::startServer($device1);
 		$ip2 = devices::startServer($device2);
 
-		if ( $ip1 == 0 )
-		{
+		if ( $ip1 == 0 ) {
 			print "\n\tUnable to establish successfull Wifi-Direct Connection..\n";
 		}
-		if ( $ip2 == 0 )
-		{
+		if ( $ip2 == 0 ) {
 			print "\n\tUnable to establish successfull Wifi-Direct Connection..\n";
 		}
 
