@@ -26,30 +26,67 @@ if ( $one2many == 1 )
 
 	devices::killProcess("checkP2P_$deviceList[0]");
 
+	#GenHash
 	for ( my $j = 0 ; $j <= $#deviceList ; $j++ )
 	{
 		push( @deviceHash, { %{ devices::genHash( $deviceList[$j] ) } } );
 	}
 
+	#Setup
 	for ( $j = 0 ; $j <= $#deviceHash ; $j++ )
 	{
 		print "\nTest:\n";
 
-		#$deviceHash[$j]->{'video'};
+		#while ( ( $key, $value ) = each( %{ $deviceHash[$j] } ) ) {
+		#	print $key. ", " . $value . "\n";
+		#}
 
-		while ( ( $key, $value ) = each( %{ $deviceHash[$j] } ) ) {
-			print $key. ", " . $value . "\n";
+		devices::setup( $deviceHash[$j]->{'id'} );
+
+		devices::openWifiDirect( $deviceHash[$j]->{'id'} );
+
+		#Adds an item to deviceHash
+		$deviceHash[$j]->{'p2pid'} = `adb -s $deviceHash[$j]->{'id'} shell getprop P2PdeviceID`;
+
+		#pending
+		if ( ( ( $#deviceList + 1 ) % 2 ) == 0 )
+		{
+			if ( ( $j % 2 ) != 0 ) {
+				devices::sendInvite( $deviceHash[$j]->{'id'}, $deviceHash[ $j - 1 ]->{'p2pid'} );
+			}
 		}
+		elsif ( ( $#deviceList + 1 ) % 2 != 0 )
+		{
+			if ( ( $j % 2 ) != 0 ) {
+				devices::sendInvite( $deviceHash[$j]->{'id'}, $deviceHash[ $j - 1 ]->{'p2pid'} );
+			}
 
-		print "devices::setup( $deviceHash[$j]->{'id'} )";
+			if ( $j == $#deviceHash )
+			{
+				devices::sendInvite( $deviceHash[$j]->{'id'}, $deviceHash[ $j - 1 ]->{'p2pid'} );
+			}
 
+		}
+	}
+
+	for ( $j = 0 ; $j <= $#deviceHash ; $j++ )
+	{
+
+		#print "\n$deviceHash[$j]->{'id'}: $deviceHash[$j]->{'p2pid'}\n";
+		devices::acceptInvite( $deviceHash[$j]->{'id'} );
+	}
+	for ( $j = 0 ; $j <= $#deviceHash ; $j++ )
+	{
+
+		#print "\n$deviceHash[$j]->{'id'}: $deviceHash[$j]->{'p2pid'}\n";
+		devices::isConnected( $deviceHash[$j]->{'id'} );
 	}
 
 	#devices::setup($device1);
 
 	#devices::openWifiDirect($device1);
 
-	sleep 30;
+	sleep 3000;
 	exit(0);
 }
 

@@ -21,8 +21,15 @@ public class OpenWifiDirect extends UiAutomatorTestCase {
 
 		// Open WiFi Settings
 		UiObject wifiOption = new UiObject(new UiSelector().className("android.widget.TextView").textContains("Fi"));
-		wifiOption.clickAndWaitForNewWindow();
-		sleep(2000);
+		try{
+			wifiOption.clickAndWaitForNewWindow();	
+		}catch(UiObjectNotFoundException e)
+		{
+			wifiOption = new UiObject(new UiSelector().className("android.widget.TextView").textContains("WLAN"));
+			wifiOption.clickAndWaitForNewWindow();	
+		}
+		
+		sleep(2000);		
 
 		// Open More Options
 		try {
@@ -42,7 +49,16 @@ public class OpenWifiDirect extends UiAutomatorTestCase {
 		// Check for Wi-Fi State
 		if (isWiFiON.isEnabled() == true) {
 			System.out.println("WiFi is Turned ON");
-			selectP2P.clickAndWaitForNewWindow();
+			try{
+				selectP2P.clickAndWaitForNewWindow();	
+			}catch(UiObjectNotFoundException e)
+			{
+				selectP2P = new UiObject(new UiSelector().className("android.widget.TextView").textContains("WLAN Direct"));
+				selectP2P.clickAndWaitForNewWindow();	
+			}
+			
+			
+
 		} else {
 			System.out.println("WiFi is Turned OFF");
 			Log.e(LOG_TAG, "Couldn't Access WiFi-Direct, check if there is any issue with Device WiFi");
