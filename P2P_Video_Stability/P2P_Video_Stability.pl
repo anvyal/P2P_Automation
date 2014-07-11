@@ -9,6 +9,8 @@ our @deviceList;
 our @deviceHash;
 
 if ( $one2many == 1 ) {
+
+	#get Device List
 	for ( my $j = 0 ; $j < $#ARGV ; $j++ ) {
 		if ( !( $j == 0 || $j == $#ARGV ) )    #Ignore first and last argument
 		{
@@ -23,7 +25,7 @@ if ( $one2many == 1 ) {
 
 	devices::killProcess("checkP2P_$deviceList[0]");
 
-	#GenHash
+	#Gen deviceHash
 	for ( my $j = 0 ; $j <= $#deviceList ; $j++ ) {
 		push( @deviceHash, { %{ devices::genHash( $deviceList[$j] ) } } );
 	}
@@ -44,27 +46,13 @@ if ( $one2many == 1 ) {
 
 		#Adds an item to deviceHash
 		$deviceHash[$j]->{'p2pid'} = `adb -s $deviceHash[$j]->{'id'} shell getprop P2PdeviceID`;
-		#pending
-		if ( ( ( $#deviceList + 1 ) % 2 ) == 0 ) {
-			if ( ( $j % 2 ) != 0 ) {
-				devices::sendInvite( $deviceHash[$j]->{'id'}, $deviceHash[ $j - 1 ]->{'p2pid'} );
-				devices::acceptInvite( $deviceHash[ $j - 1 ]->{'id'} );
-			}
-		}
-		elsif ( ( $#deviceList + 1 ) % 2 != 0 ) {
-			if ( ( $j % 2 ) != 0 ) {
-				devices::sendInvite( $deviceHash[$j]->{'id'}, $deviceHash[ $j - 1 ]->{'p2pid'} );
-				devices::acceptInvite( $deviceHash[ $j - 1 ]->{'id'} );
-			}
-
-			if ( $j == $#deviceHash ) {
-				sleep 5;
-				devices::sendInvite( $deviceHash[$j]->{'id'}, $deviceHash[ $j - 1 ]->{'p2pid'} );
-				devices::acceptInvite( $deviceHash[ $j - 1 ]->{'id'} );
-			}
-
+		if ( $j != 0 )
+		{
+			devices::sendInvite( $deviceHash[$j]->{'id'}, $deviceHash[ $j - 1 ]->{'p2pid'} );
+			devices::acceptInvite( $deviceHash[ $j - 1 ]->{'id'} );
 		}
 	}
+
 	for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
 
 		#print "\n$deviceHash[$j]->{'id'}: $deviceHash[$j]->{'p2pid'}\n";
