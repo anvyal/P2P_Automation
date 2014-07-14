@@ -48,7 +48,10 @@ if ( $one2many == 1 ) {
 		$deviceHash[$j]->{'p2pid'} = `adb -s $deviceHash[$j]->{'id'} shell getprop P2PdeviceID`;
 		if ( $j != 0 )
 		{
+			devices::searchDevices( $deviceHash[ $j - 1 ]->{'id'} );
+			sleep(2);
 			devices::sendInvite( $deviceHash[$j]->{'id'}, $deviceHash[ $j - 1 ]->{'p2pid'} );
+			sleep(2);			
 			devices::acceptInvite( $deviceHash[ $j - 1 ]->{'id'} );
 		}
 	}

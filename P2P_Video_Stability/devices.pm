@@ -221,6 +221,11 @@ sub acceptInvite {
 	system("adb -s $id shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.wifidirect.acceptInvite");
 }
 
+sub searchDevices {
+	my $id = $_[0];
+	system("adb -s $id shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.wifidirect.searchDevices");
+}
+
 sub isConnected {
 	my $id = $_[0];
 	system("adb -s $id shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.wifidirect.isConnected");
@@ -261,7 +266,7 @@ sub startLogging {
 
 	$| = 1;
 
-	print "Starting Logs on device: $id ... \n";
+	print "\nStarting Logs on device: $device{'id'} ... \n";
 
 #Win32::Process::Create( $p1, 'c:/perl/bin/perl.exe', "perl adbLogs.pl $id", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
 	startProcess( "$device{'adb'}", "perl adbLogs.pl $device{'id'}" );
