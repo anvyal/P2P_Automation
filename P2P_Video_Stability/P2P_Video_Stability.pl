@@ -35,6 +35,7 @@ if ( $one2many == 1 ) {
 		devices::setup( $deviceHash[$j]->{'id'} );
 	}
 
+	#p2pSetup
 	for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
 		print "\nTest:\n";
 
@@ -51,16 +52,32 @@ if ( $one2many == 1 ) {
 			devices::searchDevices( $deviceHash[ $j - 1 ]->{'id'} );
 			sleep(2);
 			devices::sendInvite( $deviceHash[$j]->{'id'}, $deviceHash[ $j - 1 ]->{'p2pid'} );
-			sleep(2);			
+			sleep(2);
 			devices::acceptInvite( $deviceHash[ $j - 1 ]->{'id'} );
 		}
 	}
 
-	for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
+	#identify GO
+	$goID = devices::getGoID( \@deviceHash );
 
-		#print "\n$deviceHash[$j]->{'id'}: $deviceHash[$j]->{'p2pid'}\n";
-		#devices::acceptInvite( $deviceHash[$j]->{'id'} );
+	#identify client
+	for ( $j = 0 ; $j <= 1 ; $j++ ) {
+		if ( $deviceHash[$j]->{'id'} == $goID )
+		{ }
+		else
+		{
+			$clientID = $deviceHash[$j]->{'id'};
+		}
 	}
+
+	#get client PSK
+	$psk = devices::getPSK($clientID);
+
+	for ( $j = 2 ; $j <= $#deviceHash ; $j++ ) {
+		devices::connectP2PWiFi( $deviceHash[$j]->{'id'}, $goID, $psk );
+	}
+
+	#isConnected
 	for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
 
 		my $temp = `adb -s $deviceHash[$j]->{'id'} shell ls /sdcard/17Again.mp4`;

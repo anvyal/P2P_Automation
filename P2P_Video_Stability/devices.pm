@@ -266,7 +266,7 @@ sub startLogging {
 
 	$| = 1;
 
-	print "\nStarting Logs on device: $device{'id'} ... \n";
+	print "\nStarting Logs on device: $device{'id'}... \n";
 
 #Win32::Process::Create( $p1, 'c:/perl/bin/perl.exe', "perl adbLogs.pl $id", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
 	startProcess( "$device{'adb'}", "perl adbLogs.pl $device{'id'}" );
@@ -288,6 +288,44 @@ sub killProcess
 	$title = $_[0];
 	print("taskkill /FI \"WINDOWTITLE eq $title\*\"");
 	system("taskkill /FI \"WINDOWTITLE eq $title\*\"");
+}
+
+sub connectP2PWiFi
+{
+	$id   = shift;
+	$goID = shift;
+	$psk  = shift;
+	print "\n\tConnecting device $id to existing P2P..\n";
+	system("adb -s $id shell setprop goID $goID");
+	system("adb -s $id shell setprop clientPSK $psk");
+	system("adb -s $id shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.wifidirect.connectP2PWiFi");
+}
+
+sub getGoID
+{
+	$temp       = $_[0];
+	@deviceHash = @$temp;
+	for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
+		if ( devices::isGO( $deviceHash[$j]->{'id'} ) )
+		{
+			return "$deviceHash[$j]->{'id'}";
+		}
+	}
+}
+
+sub isGO
+{
+	$deviceID = $_[0];
+	$out      = `adb -s $deviceID shell ifconfig p2p0`;
+	if ( $out =~ /ip ([\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3})/ )
+	{
+		$ip = $1;
+		if ( $ip eq "192.168.49.1" )
+		{
+			return 1;
+		}
+		else { return 0; }
+	}
 }
 
 1;
