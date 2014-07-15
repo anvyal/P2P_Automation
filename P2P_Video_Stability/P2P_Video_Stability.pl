@@ -71,10 +71,11 @@ if ( $one2many == 1 ) {
 	}
 
 	#get client PSK
-	$psk = devices::getPSK($clientID);
-
+	$clientRef = devices::getPSK($clientID);
+	$clientRef->{goID} = $goID;
 	for ( $j = 2 ; $j <= $#deviceHash ; $j++ ) {
-		devices::connectP2PWiFi( $deviceHash[$j]->{'id'}, $goID, $psk );
+		$clientRef->{id} = $deviceHash[$j]->{'id'};
+		devices::connectP2PWiFi($clientRef);
 	}
 
 	#isConnected

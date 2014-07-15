@@ -292,12 +292,12 @@ sub killProcess
 
 sub connectP2PWiFi
 {
-	$id   = shift;
-	$goID = shift;
-	$psk  = shift;
+	$clientRef = shift;
+	print "\n\$clientRef->{ssid} = $clientRef->{ssid}";
+	print "\n\$clientRef->{psk} = $clientRef->{psk}";
 	print "\n\tConnecting device $id to existing P2P..\n";
-	system("adb -s $id shell setprop goID $goID");
-	system("adb -s $id shell setprop clientPSK $psk");
+	system("adb -s $id shell setprop ssid $clientRef->{ssid}");
+	system("adb -s $id shell setprop clientPSK $clientRef->{psk}");
 	system("adb -s $id shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.wifidirect.connectP2PWiFi");
 }
 
@@ -326,6 +326,31 @@ sub isGO
 		}
 		else { return 0; }
 	}
+}
+
+sub getPSK
+{
+	my $id = $_[0];
+	system("adb -s $id pull /data/misc/wifi/p2p_supplicant.conf ./Logs/p2p_supplicant_$id.conf");
+	print("\n\Clearing REMEMBERED GROUPS from P2P config Files..\n");
+	sleep(2);
+	open P2PFILE, "./Logs/p2p_supplicant_$id.conf" or warn $!;
+	@p2pConf = <P2PFILE>;
+	close(P2PFILE);
+
+	foreach (@p2pConf) {
+		if ( $_ =~ /ssid=\"([\w|\-]*)\"/ ) {
+			print "\nssid is $1\n";
+			$param{ssid} = $1;
+		}
+		if ( $_ =~ /psk=([\w]*)/ ) {
+			print "\nPSK is $1\n";
+			$param{psk} = $1;
+			last;
+		}
+
+	}
+	return \%param;
 }
 
 1;
