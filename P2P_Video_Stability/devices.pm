@@ -293,12 +293,16 @@ sub killProcess
 sub connectP2PWiFi
 {
 	$clientRef = shift;
+
+	#Open Device Settings
+	system("adb -s $clientRef->{id} shell am start -n com.android.settings/.Settings");
 	print "\n\$clientRef->{ssid} = $clientRef->{ssid}";
 	print "\n\$clientRef->{psk} = $clientRef->{psk}";
-	print "\n\tConnecting device $id to existing P2P..\n";
-	system("adb -s $id shell setprop ssid $clientRef->{ssid}");
-	system("adb -s $id shell setprop clientPSK $clientRef->{psk}");
-	system("adb -s $id shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.wifidirect.connectP2PWiFi");
+	print "\n\tConnecting device $clientRef->{id} to existing P2P..\n";
+	system("adb -s $clientRef->{id} shell setprop ssid $clientRef->{ssid}");
+	system("adb -s $clientRef->{id} shell setprop clientPSK $clientRef->{psk}");
+	system("adb -s $clientRef->{id} push UIAutomator_4.4.2.jar /data/local/tmp/");
+	system("adb -s $clientRef->{id} shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.wifidirect.connectP2PWiFi");
 }
 
 sub getGoID
@@ -332,7 +336,7 @@ sub getPSK
 {
 	my $id = $_[0];
 	system("adb -s $id pull /data/misc/wifi/p2p_supplicant.conf ./Logs/p2p_supplicant_$id.conf");
-	print("\n\Clearing REMEMBERED GROUPS from P2P config Files..\n");
+	print("\n\Getting PSK from client\n");
 	sleep(2);
 	open P2PFILE, "./Logs/p2p_supplicant_$id.conf" or warn $!;
 	@p2pConf = <P2PFILE>;

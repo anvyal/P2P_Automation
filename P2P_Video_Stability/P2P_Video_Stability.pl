@@ -1,6 +1,7 @@
 #use strict;
 require devices;
 use Data::Dumper;
+use Term::ReadKey;
 $| = 1;
 our $one2many = $ARGV[0];
 chomp($one2many);
@@ -36,7 +37,7 @@ if ( $one2many == 1 ) {
 	}
 
 	#p2pSetup
-	for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
+	for ( $j = 0 ; $j <= 1 ; $j++ ) {
 		print "\nTest:\n";
 
 		#while ( ( $key, $value ) = each( %{ $deviceHash[$j] } ) ) {
@@ -56,6 +57,25 @@ if ( $one2many == 1 ) {
 			devices::acceptInvite( $deviceHash[ $j - 1 ]->{'id'} );
 		}
 	}
+	
+	print "\nPress any Key\n";
+sleep 2;
+
+	#isConnected
+	for ( $j = 0 ; $j <= 1 ; $j++ ) {
+
+		my $temp = `adb -s $deviceHash[$j]->{'id'} shell ls /sdcard/17Again.mp4`;
+		if ( $temp =~ /No such file or directory/ ) {
+			system( 1, "adb -s $deviceHash[$j]->{'id'} push 17Again.mp4 /sdcard/" );
+		}
+		else {
+			print "\nVideo File already exists in device: $deviceHash[$j]->{'id'}\n";
+		}
+
+		#print "\n$deviceHash[$j]->{'id'}: $deviceHash[$j]->{'p2pid'}\n";
+		devices::isConnected( $deviceHash[$j]->{'id'} );
+
+	}
 
 	#identify GO
 	$goID = devices::getGoID( \@deviceHash );
@@ -73,26 +93,13 @@ if ( $one2many == 1 ) {
 	#get client PSK
 	$clientRef = devices::getPSK($clientID);
 	$clientRef->{goID} = $goID;
+	print "\ngoID: $clientRef->{goID}\n";
 	for ( $j = 2 ; $j <= $#deviceHash ; $j++ ) {
 		$clientRef->{id} = $deviceHash[$j]->{'id'};
 		devices::connectP2PWiFi($clientRef);
 	}
 
-	#isConnected
-	for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
 
-		my $temp = `adb -s $deviceHash[$j]->{'id'} shell ls /sdcard/17Again.mp4`;
-		if ( $temp =~ /No such file or directory/ ) {
-			system( 1, "adb -s $deviceHash[$j]->{'id'} push 17Again.mp4 /sdcard/" );
-		}
-		else {
-			print "\nVideo File already exists in device: $deviceHash[$j]->{'id'}\n";
-		}
-
-		#print "\n$deviceHash[$j]->{'id'}: $deviceHash[$j]->{'p2pid'}\n";
-		devices::isConnected( $deviceHash[$j]->{'id'} );
-
-	}
 
 	sleep 3;
 
