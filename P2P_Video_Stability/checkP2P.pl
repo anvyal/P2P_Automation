@@ -2,28 +2,24 @@ use devices;
 $| = 1;
 my $one2many = $ARGV[0];
 
-if ( $one2many == 1 ) {
-	for ( my $j = 0 ; $j < $#ARGV ; $j++ ) {
-		if ( !( $j == 0 || $j == $#ARGV ) )    #Ignore first and last argument
-		{
-			$deviceList[ $j - 1 ] = $ARGV[$j];
-		}
+for ( my $j = 0 ; $j < $#ARGV ; $j++ ) {
+	if ( !( $j == 0 || $j == $#ARGV ) )    #Ignore first and last argument
+	{
+		$deviceList[ $j - 1 ] = $ARGV[$j];
 	}
 }
 
 for ( my $j = 0 ; $j <= $#deviceList ; $j++ ) {
 	push( @deviceHash, { %{ devices::genHash( $deviceList[$j] ) } } );
 }
-while (1)
-{
+while (1) {
 	for ( my $j = 0 ; $j <= $#deviceList ; $j++ ) {
 		checkDisconnect( $deviceHash[$j]->{'id'} );
 		sleep(5);
 	}
 }
 
-sub checkDisconnect
-{
+sub checkDisconnect {
 	$device = $_[0];
 	print "\nadb -s $device shell ping -c 1 192.168.49.1\n";
 	@out = `adb -s $device shell ping -c 1 192.168.49.1`;
@@ -32,20 +28,17 @@ sub checkDisconnect
 	#print @out;
 	my $disconnect = 0;
 	foreach (@out) {
-		if ( $_ =~ /Network is unreachable/ )
-		{
+		if ( $_ =~ /Network is unreachable/ ) {
 			print "\nCheckingP2P::P2P Network is Disconnected..\n";
 			$disconnect++;
 		}
 	}
-	if ( $disconnect == 0 )
-	{
+	if ( $disconnect == 0 ) {
 		print "\nCheckingP2P::P2P Network is Active\n";
 	}
 	else {
 
-		if ( $disconnect == 1 )
-		{
+		if ( $disconnect == 1 ) {
 			devices::killProcess("P2P_Video_Stability_$deviceHash[0]->{'id'}");
 
 			for ( my $j = 0 ; $j <= $#deviceList ; $j++ ) {
@@ -57,14 +50,16 @@ sub checkDisconnect
 			my $pid = fork();
 			if ( not defined $pid ) {
 				die 'resources not available';
-			} elsif ( $pid == 0 ) {
+			}
+			elsif ( $pid == 0 ) {
 
 				#CHILD
 				#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
-				print("\nstart \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList 0 | tee Logs/stdout.log\n");
-				system( 1, "start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList 0 | tee Logs/stdout.log" );
+				print("\nstart \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl $one2many @deviceList 0 | tee Logs/stdout.log\n");
+				system( 1, "start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl $one2many @deviceList 0 | tee Logs/stdout.log" );
 
-			} else {
+			}
+			else {
 
 				# PARENT -- Do nothing
 			}

@@ -6,8 +6,7 @@ $| = 1;
 our @deviceList;
 
 Target:
-do
-{
+do {
 	print "\nPlease choose the Target to be profiled: 
 
 *********************************
@@ -21,34 +20,15 @@ Enter option: ";
 	chomp($Choice);
 } while ( !( $Choice == 1 || $Choice == 2 || $Choice == 0 ) );
 
-if ( $Choice == 1 )
-{
-	print "\nPlease enter device1 id:";
-	$device1 = <>;
-	chomp($device1);
-
-	print "\nPlease enter device2 id:";
-	$device2 = <>;
-	chomp($device2);
-
-	system("mkdir Logs");
-
-	my $pid = fork();
-	if ( not defined $pid ) {
-		die 'resources not available';
-	} elsif ( $pid == 0 ) {
-
-		#CHILD
-		#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
-		print("start \"wifiDirect_$device1\" perl.exe P2P_Video_Stability.pl 0 $device1 $device2 | tee Logs/stdout.log");
-
-		system( 1, "start \"wifiDirect_$device1\" perl.exe P2P_Video_Stability.pl 0 $device1 $device2 | tee Logs/stdout.log" );
-	}
+if ( $Choice == 0 ) {
+	print "\nhope to see you back soon :) ";
+	sleep 20;
+	exit(0);
 }
-elsif ( $Choice == 2 )
-{
-	my $i = 1;
+else {
   Target:
+	my $i = 1;
+
 	do {
 		print "\nPlease enter device$i id (0 to Stop):";
 		$deviceList[ $i - 1 ] = <>;
@@ -57,9 +37,13 @@ elsif ( $Choice == 2 )
 	} while ( !( $deviceList[ $i - 2 ] eq '0' ) );
 
 	print "\nFollowing device IDs will be under test: \n";
-	for ( $j = 0 ; $j < $#deviceList ; $j++ )
-	{
+	for ( $j = 0 ; $j < $#deviceList ; $j++ ) {
 		print "\tDevice " . ( $j + 1 ) . ":" . $deviceList[$j] . "\n";
+	}
+
+	if ( ( $Choice == 1 ) && ( ( $#deviceList % 2 ) != 0 ) ) {
+		print "\n\nPlease enter Even Number of Devices for one2one Scenario\n\n";
+		goto Target;
 	}
 
 	system("mkdir Logs");
@@ -71,15 +55,15 @@ elsif ( $Choice == 2 )
 	elsif ( $pid == 0 ) {
 
 		#CHILD
-		#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
-		print("start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout.log");
-		system("start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout.log");
+		#system( 1, "start \"CrashLogs_$deviceList[0]\" perl.exe CrashLogs.pl" );
+		if ( $Choice == 2 ) {
+			print("start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout.log");
+			system( 1, "start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout.log" );
+		}
+		elsif ( $Choice == 1 ) {
+			print("start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 0 @deviceList | tee Logs/stdout.log");
+			system( 1, "start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 0 @deviceList | tee Logs/stdout.log" );
+		}
+
 	}
 }
-elsif ( $Choice == 0 )
-{
-	print "\nHope to See you back soon :) ";
-	sleep 20;
-	exit(0);
-}
-

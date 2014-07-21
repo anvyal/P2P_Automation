@@ -1,8 +1,5 @@
 package devices;
 
-use Win32;
-use Win32::Process;
-
 $deviceCheck = 1;
 
 sub detect {
@@ -24,8 +21,7 @@ sub detect {
 		}
 
 	}
-	if ( $deviceCheck == 1 )
-	{
+	if ( $deviceCheck == 1 ) {
 		if ( $#device_id < 1 ) {
 			print "\n@devices";
 			print "FATAL ERROR::Unable to detect 2 devices Connected to the PC, please check device physical connection/state..!!\n\n";
@@ -46,16 +42,17 @@ sub display {
 	}
 }
 
-sub genHash
-{
+sub genHash {
 	my $id = $_[0];
 
 	print "\nIn genHash() $id\n";
 
-	%device = ( "adb" => "adb_$id",
+	%device = (
+		"adb"    => "adb_$id",
 		"kernel" => "kernel_$id",
 		"video"  => "video_$id",
-		"id"     => "$id" );
+		"id"     => "$id"
+	);
 
 	while ( ( $key, $value ) = each(%device) ) {
 		print $key. ", " . $value . "\n";
@@ -122,16 +119,13 @@ sub parseIP {
 	@log = <SLOG>;
 	close SLOG;
 
-	foreach (@log)
-	{
-		if ( $_ =~ /Host {([\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3})}/ )
-		{
+	foreach (@log) {
+		if ( $_ =~ /Host {([\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3})}/ ) {
 			return $1;
 			$foundIP = 1;
 		}
 	}
-	if ( $foundIP == 0 )
-	{
+	if ( $foundIP == 0 ) {
 		print "\n\tUnable to get a valid IP, check if WiFi Direct connection is proper !!";
 		return 0;
 	}
@@ -254,7 +248,7 @@ sub videoStability {
 	my $ip        = $_[1];
 	$| = 1;
 
-#Win32::Process::Create( $p1, 'c:/perl/bin/perl.exe', "perl videoStability.pl $id $ip", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
+	#Win32::Process::Create( $p1, 'c:/perl/bin/perl.exe', "perl videoStability.pl $id $ip", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
 	startProcess( "$device{'video'}", "perl videoStability.pl $device{'id'} $ip" );
 
 }
@@ -268,30 +262,27 @@ sub startLogging {
 
 	print "\nStarting Logs on device: $device{'id'}... \n";
 
-#Win32::Process::Create( $p1, 'c:/perl/bin/perl.exe', "perl adbLogs.pl $id", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
+	#Win32::Process::Create( $p1, 'c:/perl/bin/perl.exe', "perl adbLogs.pl $id", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
 	startProcess( "$device{'adb'}", "perl adbLogs.pl $device{'id'}" );
 	sleep 2;
 
-#Win32::Process::Create( $p2, 'c:/perl/bin/perl.exe', "perl dmsgLogs.pl $id", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
+	#Win32::Process::Create( $p2, 'c:/perl/bin/perl.exe', "perl dmsgLogs.pl $id", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
 	startProcess( "$device{'kernel'}", "perl dmsgLogs.pl $device{'id'}" );
 }
 
-sub startProcess
-{
+sub startProcess {
 	my $title = $_[0];
 	my $cmd   = $_[1];
 	system("start \"$title\" /MIN cmd.exe /k $cmd");
 }
 
-sub killProcess
-{
+sub killProcess {
 	$title = $_[0];
 	print("taskkill /FI \"WINDOWTITLE eq $title\*\"");
 	system("taskkill /FI \"WINDOWTITLE eq $title\*\"");
 }
 
-sub connectP2PWiFi
-{
+sub connectP2PWiFi {
 	$clientRef = shift;
 
 	#Open Device Settings
@@ -305,35 +296,29 @@ sub connectP2PWiFi
 	system("adb -s $clientRef->{id} shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.wifidirect.connectP2PWiFi");
 }
 
-sub getGoID
-{
+sub getGoID {
 	$temp       = $_[0];
 	@deviceHash = @$temp;
 	for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
-		if ( devices::isGO( $deviceHash[$j]->{'id'} ) )
-		{
+		if ( devices::isGO( $deviceHash[$j]->{'id'} ) ) {
 			return "$deviceHash[$j]->{'id'}";
 		}
 	}
 }
 
-sub isGO
-{
+sub isGO {
 	$deviceID = $_[0];
 	$out      = `adb -s $deviceID shell ifconfig p2p0`;
-	if ( $out =~ /ip ([\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3})/ )
-	{
+	if ( $out =~ /ip ([\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3})/ ) {
 		$ip = $1;
-		if ( $ip eq "192.168.49.1" )
-		{
+		if ( $ip eq "192.168.49.1" ) {
 			return 1;
 		}
 		else { return 0; }
 	}
 }
 
-sub getPSK
-{
+sub getPSK {
 	my $id = $_[0];
 	system("adb -s $id pull /data/misc/wifi/p2p_supplicant.conf ./Logs/p2p_supplicant_$id.conf");
 	print("\n\Getting PSK from client\n");

@@ -1,7 +1,7 @@
 #use strict;
 require devices;
 use Data::Dumper;
-use Term::ReadKey;
+
 $| = 1;
 our $one2many = $ARGV[0];
 chomp($one2many);
@@ -36,7 +36,7 @@ if ( $one2many == 1 ) {
 		devices::setup( $deviceHash[$j]->{'id'} );
 	}
 
-	#p2pSetup
+	#p2pSetup for first 2 devices
 	for ( $j = 0 ; $j <= 1 ; $j++ ) {
 		print "\nTest:\n";
 
@@ -48,18 +48,19 @@ if ( $one2many == 1 ) {
 
 		#Adds an item to deviceHash
 		$deviceHash[$j]->{'p2pid'} = `adb -s $deviceHash[$j]->{'id'} shell getprop P2PdeviceID`;
-		if ( $j != 0 )
-		{
-			devices::searchDevices( $deviceHash[ $j - 1 ]->{'id'} );
-			sleep(2);
+
+		if ( $j != 0 ) {
+
+			#devices::searchDevices( $deviceHash[ $j - 1 ]->{'id'} );
+			#sleep(2);
 			devices::sendInvite( $deviceHash[$j]->{'id'}, $deviceHash[ $j - 1 ]->{'p2pid'} );
 			sleep(2);
 			devices::acceptInvite( $deviceHash[ $j - 1 ]->{'id'} );
 		}
 	}
-	
+
 	print "\nPress any Key\n";
-sleep 2;
+	sleep 20;
 
 	#isConnected
 	for ( $j = 0 ; $j <= 1 ; $j++ ) {
@@ -82,10 +83,8 @@ sleep 2;
 
 	#identify client
 	for ( $j = 0 ; $j <= 1 ; $j++ ) {
-		if ( $deviceHash[$j]->{'id'} == $goID )
-		{ }
-		else
-		{
+		if ( $deviceHash[$j]->{'id'} == $goID ) { }
+		else {
 			$clientID = $deviceHash[$j]->{'id'};
 		}
 	}
@@ -98,8 +97,6 @@ sleep 2;
 		$clientRef->{id} = $deviceHash[$j]->{'id'};
 		devices::connectP2PWiFi($clientRef);
 	}
-
-
 
 	sleep 3;
 
@@ -118,11 +115,23 @@ sleep 2;
 	else {
 
 		# PARENT
-		for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
 
-			#print "\n$deviceHash[$j]->{'id'}: $deviceHash[$j]->{'p2pid'}\n";
-			$deviceHash[$j]->{'ip'} = devices::startServer( $deviceHash[$j]->{'id'} );
+		#Start Server
+		#In one2many scenario, only server runs in GO
+		if ( $one2many == 1 ) {
+			for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
+				if ( $deviceHash[$j]->{'id'} == $goID ) {
+					$deviceHash[$j]->{'ip'} = devices::startServer( $deviceHash[$j]->{'id'} );
+				}
+			}
+		}
+		else {
+			for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
 
+				#print "\n$deviceHash[$j]->{'id'}: $deviceHash[$j]->{'p2pid'}\n";
+				$deviceHash[$j]->{'ip'} = devices::startServer( $deviceHash[$j]->{'id'} );
+
+			}
 		}
 
 		for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
@@ -134,9 +143,22 @@ sleep 2;
 		$ip2 = "192.168.49.1";
 		for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
 
-			#print "\n$deviceHash[$j]->{'id'}: $deviceHash[$j]->{'p2pid'}\n";
-			devices::videoStability( $deviceHash[$j], $ip2 );
-			sleep 15;
+			if ( $one2many == 1 ) {
+
+				#print "\n$deviceHash[$j]->{'id'}: $deviceHash[$j]->{'p2pid'}\n";
+				devices::videoStability( $deviceHash[$j], $ip2 );
+				sleep 5;
+			}
+			else {
+				if ( ( $j % 2 ) != 0 ) {
+					devices::videoStability( $deviceHash[$j], $deviceHash[ ( $j - 1 ) ]->{'ip'} );
+					sleep 5;
+				}
+				else {
+					devices::videoStability( $deviceHash[$j], $deviceHash[ ( $j + 1 ) ]->{'ip'} );
+					sleep 5;
+				}
+			}
 
 		}
 
@@ -199,9 +221,9 @@ elsif ( $one2many == 0 ) {
 	}
 	elsif ( $pid == 0 ) {
 
-#CHILD
-#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
-#system( 1, "start \"checkP2P_$device1\" perl.exe checkP2P.pl $device1 $device2" );
+		#CHILD
+		#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
+		#system( 1, "start \"checkP2P_$device1\" perl.exe checkP2P.pl $device1 $device2" );
 		exit(0);
 	}
 	else {
