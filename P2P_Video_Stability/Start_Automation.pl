@@ -27,7 +27,7 @@ if ( $Choice == 0 ) {
 }
 else {
   Target:
-	my $i = 1;
+	$i = 1;
 
 	do {
 		print "\nPlease enter device$i id (0 to Stop):";
@@ -36,14 +36,14 @@ else {
 		$i++;
 	} while ( !( $deviceList[ $i - 2 ] eq '0' ) );
 
-	print "\nFollowing device IDs will be under test: \n";
-	for ( $j = 0 ; $j < $#deviceList ; $j++ ) {
-		print "\tDevice " . ( $j + 1 ) . ":" . $deviceList[$j] . "\n";
-	}
-
 	if ( ( $Choice == 1 ) && ( ( $#deviceList % 2 ) != 0 ) ) {
 		print "\n\nPlease enter Even Number of Devices for one2one Scenario\n\n";
 		goto Target;
+	}
+
+	print "\nFollowing device IDs will be under test: \n";
+	for ( $j = 0 ; $j < $#deviceList ; $j++ ) {
+		print "\tDevice " . ( $j + 1 ) . ":" . $deviceList[$j] . "\n";
 	}
 
 	system("mkdir Logs");
@@ -55,7 +55,7 @@ else {
 	elsif ( $pid == 0 ) {
 
 		#CHILD
-		#system( 1, "start \"CrashLogs_$deviceList[0]\" perl.exe CrashLogs.pl" );
+		system( 1, "start \"CrashLogs_$deviceList[0]\" perl.exe crashLog.pl" );
 		if ( $Choice == 2 ) {
 			print("start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout.log");
 			system( 1, "start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout.log" );
