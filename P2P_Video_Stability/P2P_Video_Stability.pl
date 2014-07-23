@@ -9,6 +9,8 @@ chomp($one2many);
 our @deviceList;
 our @deviceHash;
 
+$Time = devices::getTime();
+
 #get Device List
 for ( my $j = 0 ; $j < $#ARGV ; $j++ ) {
 	if ( !( $j == 0 || $j == $#ARGV ) )    #Ignore first and last argument
@@ -150,7 +152,7 @@ else {
 	for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
 
 		#print "\n$deviceHash[$j]->{'id'}: $deviceHash[$j]->{'p2pid'}\n";
-		devices::startLogging( $deviceHash[$j] );
+		devices::startLogging( $deviceHash[$j], $Time );
 
 	}
 	$ip2 = "192.168.49.1";

@@ -2,7 +2,7 @@ use devices;
 devices::detect();
 devices::display();
 $Time = devices::getTime();
-$| = 1;
+$|    = 1;
 
 our @deviceList;
 
@@ -56,15 +56,23 @@ else {
 	elsif ( $pid == 0 ) {
 
 		#CHILD
-		system( 1, "start \"CrashLogs_$deviceList[0]\" perl.exe crashLog.pl" );
 		if ( $Choice == 2 ) {
-			print("start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout_$Time.log");
-			system( 1, "start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout_$Time.log" );
+			$one2many = 1;
 		}
 		elsif ( $Choice == 1 ) {
-			print("start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 0 @deviceList | tee Logs/stdout.log");
-			system( 1, "start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 0 @deviceList | tee Logs/stdout.log" );
+			$one2many = 0;
 		}
+		system("mkdir ./Logs/Stdout/");
+		system("rm -rf temp.bat");
+		open( TEMP, ">temp.bat" );
+
+		print TEMP "perl.exe P2P_Video_Stability.pl $one2many @deviceList | tee ./Logs/Stdout/stdout_$Time.log";
+		close TEMP;
+		sleep 1;
+
+		system( 1, "start \"CrashLogs_$deviceList[0]\" perl.exe crashLog.pl" );
+		print("start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl $one2many @deviceList | tee ./Logs/stdout_$Time.log");
+		system( 1, "start \"P2P_Video_Stability_$deviceList[0]\" temp.bat" );
 
 	}
 }

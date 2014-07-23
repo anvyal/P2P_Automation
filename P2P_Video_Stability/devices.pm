@@ -105,17 +105,17 @@ sub startServer {
 	system("adb -s $id shell am start -n org.xeustechnologies.android.kws/.ui.KwsActivity");
 	sleep 2;
 	system("pwd");
-	system("adb -s $id shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.httpserver.startServer | tee ./Logs/ServerLog_$id.log");
+	system("mkdir ./Logs/Conf/");
+	system("adb -s $id shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.httpserver.startServer | tee ./Logs/Conf/ServerLog_$id.log");
 
 	#system("adb -s $id pull /sdcard/ServerLog_$id.log /Logs/");
 	$IP = parseIP($id);
 	print "\nIP Fetched: $IP";
 	return $IP;
 }
-
 sub parseIP {
 	my $id = $_[0];
-	open SLOG, "./Logs/ServerLog_$id.log" or die $!;
+	open SLOG, "./Logs/Conf/ServerLog_$id.log" or die $!;
 	@log = <SLOG>;
 	close SLOG;
 
@@ -143,14 +143,15 @@ sub reEnableWiFi {
 sub clearConfig {
 
 	my $id = $_[0];
-	system("adb -s $id pull /data/misc/wifi/p2p_supplicant.conf ./Logs/p2p_supplicant_$id.conf");
-	system("adb -s $id pull /data/misc/wifi/wpa_supplicant.conf ./Logs/wpa_supplicant_$id.conf");
+	system("mkdir ./Logs/Conf/");
+	system("adb -s $id pull /data/misc/wifi/p2p_supplicant.conf ./Logs/Conf/p2p_supplicant_$id.conf");
+	system("adb -s $id pull /data/misc/wifi/wpa_supplicant.conf ./Logs/Conf/wpa_supplicant_$id.conf");
 	print("\n\Clearing REMEMBERED GROUPS from P2P config Files..\n");
 	sleep(2);
-	open P2PFILE, "./Logs/p2p_supplicant_$id.conf" or warn $!;
-	open WFILE,   "./Logs/wpa_supplicant_$id.conf" or warn $!;
-	open P2PNEW,  ">./Logs/p2p_supplicant.conf"    or die $!;
-	open WNEW,    ">./Logs/wpa_supplicant.conf"    or die $!;
+	open P2PFILE, "./Logs/Conf/p2p_supplicant_$id.conf" or warn $!;
+	open WFILE,   "./Logs/Conf/wpa_supplicant_$id.conf" or warn $!;
+	open P2PNEW,  ">./Logs/Conf/p2p_supplicant.conf"    or die $!;
+	open WNEW,    ">./Logs/Conf/wpa_supplicant.conf"    or die $!;
 	@p2pConf = <P2PFILE>;
 	@wconf   = <WFILE>;
 	close(P2PFILE);
@@ -190,8 +191,8 @@ sub clearConfig {
 
 	close(P2PNEW);
 	close(WNEW);
-	system("adb -s $id push ./Logs/p2p_supplicant.conf /data/misc/wifi/p2p_supplicant.conf");
-	system("adb -s $id push ./Logs/wpa_supplicant.conf /data/misc/wifi/wpa_supplicant.conf");
+	system("adb -s $id push ./Logs/Conf/p2p_supplicant.conf /data/misc/wifi/p2p_supplicant.conf");
+	system("adb -s $id push ./Logs/Conf/wpa_supplicant.conf /data/misc/wifi/wpa_supplicant.conf");
 }
 
 sub openWifiDirect {
@@ -248,7 +249,6 @@ sub videoStability {
 	my $ip        = $_[1];
 	$| = 1;
 
-	#Win32::Process::Create( $p1, 'c:/perl/bin/perl.exe', "perl videoStability.pl $id $ip", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
 	startProcess( "$device{'video'}", "perl videoStability.pl $device{'id'} $ip" );
 
 }
@@ -259,27 +259,25 @@ sub getTime {
 
 	( $second, $minute, $hour, $dayOfMonth, $month, $yearOffset, $dayOfWeek, $dayOfYear, $daylightSavings ) = localtime();
 	$year = 1900 + $yearOffset;
-	$Time = "$hour:$minute:$second-$weekDays[$dayOfWeek]-$months[$month]-$dayOfMonth-$year";
+	$Time = "$hour-$minute-$second-$weekDays[$dayOfWeek]-$months[$month]-$dayOfMonth-$year";
 
-	print "\n\n$Time";
+	#print "\n\n$Time";
 	return $Time;
 }
 
 sub startLogging {
 
 	my $deviceRef = $_[0];
-	my %device    = %{$deviceRef};
-	$|    = 1;
-	$Time = getTime();
+	$Time = $_[1];
+	my %device = %{$deviceRef};
+	$| = 1;
 
 	print "\nStarting Logs on device: $device{'id'}... \n";
 
-	#Win32::Process::Create( $p1, 'c:/perl/bin/perl.exe', "perl adbLogs.pl $id", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
-	startProcess( "$device{'adb'}", "perl adbLogs.pl $device{'id'}_$Time" );
+	startProcess( "$device{'adb'}", "perl adbLogs.pl $device{'id'} $Time" );
 	sleep 2;
 
-	#Win32::Process::Create( $p2, 'c:/perl/bin/perl.exe', "perl dmsgLogs.pl $id", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
-	startProcess( "$device{'kernel'}", "perl dmsgLogs.pl $device{'id'}_$Time" );
+	startProcess( "$device{'kernel'}", "perl dmsgLogs.pl $device{'id'} $Time" );
 }
 
 sub startProcess {
