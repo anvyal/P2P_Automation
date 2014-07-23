@@ -253,21 +253,33 @@ sub videoStability {
 
 }
 
+sub getTime {
+	@months   = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
+	@weekDays = qw(Sun Mon Tue Wed Thu Fri Sat Sun);
+
+	( $second, $minute, $hour, $dayOfMonth, $month, $yearOffset, $dayOfWeek, $dayOfYear, $daylightSavings ) = localtime();
+	$year = 1900 + $yearOffset;
+	$Time = "$hour:$minute:$second-$weekDays[$dayOfWeek]-$months[$month]-$dayOfMonth-$year";
+
+	print "\n\n$Time";
+	return $Time;
+}
+
 sub startLogging {
 
 	my $deviceRef = $_[0];
 	my %device    = %{$deviceRef};
-
-	$| = 1;
+	$|    = 1;
+	$Time = getTime();
 
 	print "\nStarting Logs on device: $device{'id'}... \n";
 
 	#Win32::Process::Create( $p1, 'c:/perl/bin/perl.exe', "perl adbLogs.pl $id", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
-	startProcess( "$device{'adb'}", "perl adbLogs.pl $device{'id'}" );
+	startProcess( "$device{'adb'}", "perl adbLogs.pl $device{'id'}_$Time" );
 	sleep 2;
 
 	#Win32::Process::Create( $p2, 'c:/perl/bin/perl.exe', "perl dmsgLogs.pl $id", 1, CREATE_NEW_CONSOLE, '.', ) or die Win32::FormatMessage( Win32::GetLastError() );
-	startProcess( "$device{'kernel'}", "perl dmsgLogs.pl $device{'id'}" );
+	startProcess( "$device{'kernel'}", "perl dmsgLogs.pl $device{'id'}_$Time" );
 }
 
 sub startProcess {
