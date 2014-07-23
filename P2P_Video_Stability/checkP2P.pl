@@ -1,4 +1,5 @@
 use devices;
+$Time = devices::getTime();
 $| = 1;
 my $one2many = $ARGV[0];
 
@@ -55,8 +56,8 @@ sub checkDisconnect {
 
 				#CHILD
 				#system("start \"wifiDirect\" /MIN cmd.exe /k sleep 5" );
-				print("\nstart \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl $one2many @deviceList 0 | tee Logs/stdout.log\n");
-				system( 1, "start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl $one2many @deviceList 0 | tee Logs/stdout.log" );
+				print("\nstart \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl $one2many @deviceList 0 | tee Logs/stdout_$Time.log\n");
+				system( 1, "start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl $one2many @deviceList 0 | tee Logs/stdout_$Time.log" );
 
 			}
 			else {

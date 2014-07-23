@@ -1,6 +1,7 @@
 use devices;
 devices::detect();
 devices::display();
+$Time = devices::getTime();
 $| = 1;
 
 our @deviceList;
@@ -57,8 +58,8 @@ else {
 		#CHILD
 		system( 1, "start \"CrashLogs_$deviceList[0]\" perl.exe crashLog.pl" );
 		if ( $Choice == 2 ) {
-			print("start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout.log");
-			system( 1, "start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout.log" );
+			print("start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout_$Time.log");
+			system( 1, "start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 1 @deviceList | tee Logs/stdout_$Time.log" );
 		}
 		elsif ( $Choice == 1 ) {
 			print("start \"P2P_Video_Stability_$deviceList[0]\" perl.exe P2P_Video_Stability.pl 0 @deviceList | tee Logs/stdout.log");
