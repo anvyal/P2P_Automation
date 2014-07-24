@@ -1,6 +1,7 @@
 package devices;
 
 $deviceCheck = 1;
+$debug       = 1;
 
 sub detect {
 
@@ -9,7 +10,6 @@ sub detect {
 	#print "Devices: @devices";
 	print("\nDetecting the devices connected to this PC...\n");
 	foreach (@devices) {
-
 		#print "line $i: ".$_;
 		if (/List of devices attached/) {
 
@@ -113,6 +113,7 @@ sub startServer {
 	print "\nIP Fetched: $IP";
 	return $IP;
 }
+
 sub parseIP {
 	my $id = $_[0];
 	open SLOG, "./Logs/Conf/ServerLog_$id.log" or die $!;
@@ -261,7 +262,7 @@ sub getTime {
 	$year = 1900 + $yearOffset;
 	$Time = "$hour-$minute-$second-$weekDays[$dayOfWeek]-$months[$month]-$dayOfMonth-$year";
 
-	#print "\n\n$Time";
+	print "\n\n\$Time is $Time" if ( $debug == 1 );
 	return $Time;
 }
 
@@ -330,10 +331,10 @@ sub isGO {
 
 sub getPSK {
 	my $id = $_[0];
-	system("adb -s $id pull /data/misc/wifi/p2p_supplicant.conf ./Logs/p2p_supplicant_$id.conf");
+	system("adb -s $id pull /data/misc/wifi/p2p_supplicant.conf ./Logs/Conf/p2p_supplicant_$id.conf");
 	print("\n\Getting PSK from client\n");
 	sleep(2);
-	open P2PFILE, "./Logs/p2p_supplicant_$id.conf" or warn $!;
+	open P2PFILE, "./Logs/Conf/p2p_supplicant_$id.conf" or warn $!;
 	@p2pConf = <P2PFILE>;
 	close(P2PFILE);
 

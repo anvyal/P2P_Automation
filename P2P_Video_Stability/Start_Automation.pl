@@ -44,9 +44,8 @@ else {
 
 	print "\nFollowing device IDs will be under test: \n";
 	for ( $j = 0 ; $j < $#deviceList ; $j++ ) {
-		print "\tDevice " . ( $j + 1 ) . ":" . $deviceList[$j] . "\n";
+		print "\tDevice " . ( $j + 1 ) . ": " . $deviceList[$j] . "\n";
 	}
-
 	system("mkdir Logs");
 
 	my $pid = fork();

@@ -1,6 +1,6 @@
 #use strict;
 require devices;
-use Data::Dumper;
+$debug = 1;
 
 $| = 1;
 our $one2many = $ARGV[0];
@@ -98,9 +98,12 @@ if ( $one2many == 1 ) {
 
 	#identify client
 	for ( $j = 0 ; $j <= 1 ; $j++ ) {
-		if ( $deviceHash[$j]->{'id'} == $goID ) { }
+		if ( $deviceHash[$j]->{'id'} eq $goID ) {
+			print "\n\nIn Identify client if\(\$goID\):\n\$deviceHash[$j]->{'id'}=$deviceHash[$j]->{'id'}, \$goID = $goID\n" if ( $debug == 1 );
+		}
 		else {
 			$clientID = $deviceHash[$j]->{'id'};
+			print "\n\n\$clientID = $clientID\n" if ( $debug == 1 );
 		}
 	}
 
@@ -135,7 +138,7 @@ else {
 	#In one2many scenario, only server runs in GO
 	if ( $one2many == 1 ) {
 		for ( $j = 0 ; $j <= $#deviceHash ; $j++ ) {
-			if ( $deviceHash[$j]->{'id'} == $goID ) {
+			if ( $deviceHash[$j]->{'id'} eq $goID ) {
 				$deviceHash[$j]->{'ip'} = devices::startServer( $deviceHash[$j]->{'id'} );
 			}
 		}
@@ -162,16 +165,16 @@ else {
 
 			#print "\n$deviceHash[$j]->{'id'}: $deviceHash[$j]->{'p2pid'}\n";
 			devices::videoStability( $deviceHash[$j], $ip2 );
-			sleep 5;
+			sleep 20;
 		}
 		else {
 			if ( ( $j % 2 ) != 0 ) {
 				devices::videoStability( $deviceHash[$j], $deviceHash[ ( $j - 1 ) ]->{'ip'} );
-				sleep 5;
+				sleep 20;
 			}
 			else {
 				devices::videoStability( $deviceHash[$j], $deviceHash[ ( $j + 1 ) ]->{'ip'} );
-				sleep 5;
+				sleep 20;
 			}
 		}
 
