@@ -46,7 +46,10 @@ else {
 	for ( $j = 0 ; $j < $#deviceList ; $j++ ) {
 		print "\tDevice " . ( $j + 1 ) . ": " . $deviceList[$j] . "\n";
 	}
-	system("mkdir Logs");
+	if ( !-e './Logs/' )
+	{
+		system("mkdir Logs");
+	}
 
 	my $pid = fork();
 	if ( not defined $pid ) {
@@ -61,7 +64,10 @@ else {
 		elsif ( $Choice == 1 ) {
 			$one2many = 0;
 		}
-		system("mkdir ./Logs/Stdout/");
+		if ( !-e './Logs/Stdout/' )
+		{
+			system("mkdir ./Logs/Stdout/");
+		}
 		system("rm -rf temp.bat");
 		open( TEMP, ">temp.bat" );
 

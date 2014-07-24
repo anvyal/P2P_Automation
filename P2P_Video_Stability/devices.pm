@@ -10,6 +10,7 @@ sub detect {
 	#print "Devices: @devices";
 	print("\nDetecting the devices connected to this PC...\n");
 	foreach (@devices) {
+
 		#print "line $i: ".$_;
 		if (/List of devices attached/) {
 
@@ -104,8 +105,10 @@ sub startServer {
 	print("\n\tStarting KWS Server on device: $id..");
 	system("adb -s $id shell am start -n org.xeustechnologies.android.kws/.ui.KwsActivity");
 	sleep 2;
-	system("pwd");
-	system("mkdir ./Logs/Conf/");
+	if ( !-e './Logs/Conf/' )
+	{
+		system("mkdir ./Logs/Conf/");
+	}
 	system("adb -s $id shell uiautomator runtest UIAutomator_4.4.2.jar -c com.qualcomm.httpserver.startServer | tee ./Logs/Conf/ServerLog_$id.log");
 
 	#system("adb -s $id pull /sdcard/ServerLog_$id.log /Logs/");
@@ -144,7 +147,10 @@ sub reEnableWiFi {
 sub clearConfig {
 
 	my $id = $_[0];
-	system("mkdir ./Logs/Conf/");
+	if ( !-e './Logs/Conf/' )
+	{
+		system("mkdir ./Logs/Conf/");
+	}
 	system("adb -s $id pull /data/misc/wifi/p2p_supplicant.conf ./Logs/Conf/p2p_supplicant_$id.conf");
 	system("adb -s $id pull /data/misc/wifi/wpa_supplicant.conf ./Logs/Conf/wpa_supplicant_$id.conf");
 	print("\n\Clearing REMEMBERED GROUPS from P2P config Files..\n");
